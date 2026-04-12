@@ -6,6 +6,12 @@ import SNTreeCanvas from '../components/SNTreeCanvas.jsx'
 import SNMapModal from '../components/SNMapModal.jsx'
 import useReveal from '../hooks/useReveal.js'
 import logoSvg from '../assets/solarnexa-logo.svg'
+import lcPhoto from '../assets/team/lcPhoto.png'
+import cvPhoto from '../assets/team/cvPhoto.webp'
+import spPhoto from '../assets/team/spPhoto.webp'
+import sgPhoto from '../assets/team/sgPhoto.webp'
+import hnPhoto from '../assets/team/hnPhoto.webp'
+import skPhoto from '../assets/team/skPhoto.webp'
 
 /* ── tiny helpers ─────────────────────────────────── */
 function scrollTo(id) {
@@ -315,14 +321,14 @@ function SNRoadmap() {
 /* ── SNTeam ───────────────────────────────────────── */
 // Row 1: 5 members  |  Row 2: member + 3 interactive + "growing"
 const TEAM_R1 = [
-  { n: '01', av: 'LC', name: 'L E Chakrawarthy Sreenivas', role: 'Founder',   photo: null },
-  { n: '02', av: 'CV', name: 'Chakireddy Varshitha',        role: 'Core Team', photo: null },
-  { n: '03', av: 'SP', name: 'Siddharth P J',               role: 'Core Team', photo: null },
-  { n: '04', av: 'SG', name: 'Subrat Gupta',                role: 'Core Team', photo: null },
-  { n: '05', av: 'HN', name: 'HemaSri Nemali',              role: 'Core Team', photo: null },
+  { n: '01', av: 'SK', name: 'Santosh Krishna Bandla', role: 'Core Team',   photo: skPhoto },
+  { n: '02', av: 'CV', name: 'Chakireddy Varshitha',        role: 'Core Team', photo: cvPhoto },
+  { n: '03', av: 'SP', name: 'Siddharth P J',               role: 'Core Team', photo: spPhoto },
+  { n: '04', av: 'SG', name: 'Subrat Gupta',                role: 'Core Team', photo: sgPhoto },
+  { n: '05', av: 'HN', name: 'HemaSri Nemali',              role: 'Core Team', photo: hnPhoto },
 ]
 const TEAM_R2 = [
-  { n: '06', av: 'SK', name: 'Santosh Krishna Bandla', role: 'Core Team', photo: null },
+  { n: '06', av: 'LC', name: 'L E Chakrawarthy Sreenivas', role: 'Founder', photo: lcPhoto },
 ]
 
 // How to add a photo: import it at the top of this file like:

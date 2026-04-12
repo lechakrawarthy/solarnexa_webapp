@@ -474,31 +474,57 @@
   font-size: 12px; color: var(--ink-60); line-height: 1.6; font-weight: 400;
 }
 
-/* Photo background for team cells — greyscale + warm ink fade */
-/* The background-image is set inline; CSS applies the visual treatment */
+/* Photo background for team cells — greyscale + plasma sepia tint */
+/*
+  HOW IT WORKS:
+  1. The photo is desaturated via CSS filter:grayscale(1) on a wrapper pseudo-layer.
+     We can't use filter on the cell directly (it clips z-stacking),
+     so we use a technique: the background-image is desaturated by the overlay blend stack.
+  2. Two overlay layers sit on top:
+     a) A warm sepia/plasma tone at 60% opacity — unifies any photo background
+     b) A bottom-fade to paper so name/role always reads cleanly
+*/
 .sn-tcell[style*="background-image"] {
   background-size: cover !important;
-  background-position: center top !important;
-  /* desaturate the photo */
-  filter: none; /* filter on parent clips children — use overlay instead */
+  background-position: center 20% !important;
+  /* greyscale via blending — saturate(0) desaturates without breaking z-index */
+  filter: saturate(0.15) brightness(0.95);
+  isolation: isolate;
 }
 .sn-tcell__photo-overlay {
-  position: absolute; inset: 0; border-radius: inherit;
-  /* greyscale effect via colour-burn: paper covers mid-tones, plasma tints highlights */
+  position: absolute; inset: 0; border-radius: inherit; z-index: 0; pointer-events: none;
   background:
-    linear-gradient(to bottom,
+    /* bottom dark fade — ensures text always legible */
+    linear-gradient(
+      to bottom,
       rgba(28,24,20,0.0)  0%,
-      rgba(28,24,20,0.55) 100%),
-    linear-gradient(160deg,
-      rgba(248,245,238,0.72) 0%,
-      rgba(242,237,227,0.55) 60%,
-      rgba(28,24,20,0.0) 100%);
-  z-index: 0; pointer-events: none;
-  mix-blend-mode: normal;
+      rgba(28,24,20,0.0)  30%,
+      rgba(28,24,20,0.65) 100%
+    ),
+    /* plasma-warm sepia tint at ~60% — the cohesion layer */
+    linear-gradient(
+      160deg,
+      rgba(217,59,43,0.22)  0%,
+      rgba(242,180,100,0.28) 40%,
+      rgba(28,24,20,0.15)    100%
+    );
+  mix-blend-mode: multiply;
 }
-/* When a photo cell has overlay — make avatar and text stand out on dark lower area */
-.sn-tcell[style*="background-image"] .sn-tcell__name { color: var(--ink); text-shadow: 0 1px 4px rgba(248,245,238,0.6); }
-.sn-tcell[style*="background-image"] .sn-tcell__av { background: rgba(248,245,238,0.9); }
+/* Reverse the parent greyscale filter for child text & avatar */
+.sn-tcell[style*="background-image"] > :not(.sn-tcell__photo-overlay) {
+  position: relative; z-index: 1;
+  /* counter-filter to keep text sharp and coloured */
+  filter: saturate(5) brightness(1.15);
+}
+/* Avatar on photo cell — opaque so initials read clearly */
+.sn-tcell[style*="background-image"] .sn-tcell__av {
+  background: rgba(248,245,238,0.92);
+  border-color: rgba(248,245,238,0.5);
+}
+/* Name / role on photo — lighter to read on dark fade */
+.sn-tcell[style*="background-image"] .sn-tcell__name { color: rgba(248,245,238,0.95); }
+.sn-tcell[style*="background-image"] .sn-tcell__role { color: rgba(248,245,238,0.55); }
+.sn-tcell[style*="background-image"] .sn-tcell__num  { color: rgba(248,245,238,0.3); }
 .sn-tcell > :not(.sn-tcell__photo-overlay) { position: relative; z-index: 1; }
 
 /* Interactive special cells */

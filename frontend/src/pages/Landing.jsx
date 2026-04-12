@@ -444,6 +444,7 @@ function TeamCellMap({ onOpenMap }) {
 }
 
 function SNTeam() {
+  const [mapOpen, setMapOpen] = useState(false)
   return (
     <section className="sn-team" id="team">
       <div className="sn-label reveal">The team</div>
@@ -475,7 +476,7 @@ function SNTeam() {
         {/* Interactive special cells */}
         <TeamCellEnergy />
         <TeamCellYield />
-        <TeamCellMap />
+        <TeamCellMap onOpenMap={() => setMapOpen(true)} />
 
         {/* "We're growing" teaser — last cell */}
         <div className="sn-tcell sn-tcell--r2 sn-tcell--grow">
@@ -483,6 +484,8 @@ function SNTeam() {
           <div className="sn-tcell__grow-body">Open roles in tech &amp; ops</div>
         </div>
       </div>
+
+      {mapOpen && <SNMapModal onClose={() => setMapOpen(false)} />}
     </section>
   )
 }

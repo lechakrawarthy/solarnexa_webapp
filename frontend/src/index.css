@@ -474,12 +474,31 @@
   font-size: 12px; color: var(--ink-60); line-height: 1.6; font-weight: 400;
 }
 
-/* Photo background overlay for team cells */
+/* Photo background for team cells — greyscale + warm ink fade */
+/* The background-image is set inline; CSS applies the visual treatment */
+.sn-tcell[style*="background-image"] {
+  background-size: cover !important;
+  background-position: center top !important;
+  /* desaturate the photo */
+  filter: none; /* filter on parent clips children — use overlay instead */
+}
 .sn-tcell__photo-overlay {
   position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(160deg, rgba(248,245,238,0.88) 0%, rgba(248,245,238,0.7) 100%);
+  /* greyscale effect via colour-burn: paper covers mid-tones, plasma tints highlights */
+  background:
+    linear-gradient(to bottom,
+      rgba(28,24,20,0.0)  0%,
+      rgba(28,24,20,0.55) 100%),
+    linear-gradient(160deg,
+      rgba(248,245,238,0.72) 0%,
+      rgba(242,237,227,0.55) 60%,
+      rgba(28,24,20,0.0) 100%);
   z-index: 0; pointer-events: none;
+  mix-blend-mode: normal;
 }
+/* When a photo cell has overlay — make avatar and text stand out on dark lower area */
+.sn-tcell[style*="background-image"] .sn-tcell__name { color: var(--ink); text-shadow: 0 1px 4px rgba(248,245,238,0.6); }
+.sn-tcell[style*="background-image"] .sn-tcell__av { background: rgba(248,245,238,0.9); }
 .sn-tcell > :not(.sn-tcell__photo-overlay) { position: relative; z-index: 1; }
 
 /* Interactive special cells */
@@ -522,7 +541,10 @@
 }
 
 /* Map cell */
-.sn-tcell--map { background: var(--paper); }
+.sn-tcell--map { background: var(--paper); cursor: pointer !important; }
+.sn-tcell--map:hover { background: var(--paper-warm); }
+.sn-tcell__map-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.sn-tcell__map-expand { font-size: 10px; font-weight: 500; color: var(--plasma); letter-spacing: .06em; text-transform: uppercase; }
 .sn-tcell__map-stage {
   position: relative; width: 100%; flex: 1; min-height: 90px;
   background: var(--paper-warm); border-radius: 10px; margin: 6px 0;

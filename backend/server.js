@@ -5,7 +5,7 @@ import cors from 'cors'
 const app = express()
 const PORT = process.env.PORT || 5000
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:3000' }))
+app.use(cors())
 app.use(express.json())
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -186,6 +186,11 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal server error' })
 })
 
-app.listen(PORT, () => {
-  console.log(`SolarNexa API running on http://localhost:${PORT}`)
-})
+// Local dev only — Vercel ignores this and uses the export below
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`SolarNexa API running on http://localhost:${PORT}`)
+  })
+}
+
+export default app

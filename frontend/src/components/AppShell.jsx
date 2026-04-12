@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet, Link } from 'react-router-dom'
+import logoSvg from '../assets/solarnexa-logo.svg'
 
 const links = [
   { to: '/app',               label: 'Dashboard',     end: true  },
@@ -26,28 +27,31 @@ export default function AppShell() {
       }}>
         {/* Brand */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-            <path d="M14 26V17" stroke="var(--plasma)" strokeWidth="1.4" strokeLinecap="round"/>
-            <path d="M14 17C14 17 8.5 13 8.5 8C8.5 5.5 10.5 4 12.5 4.6C10.5 6.5 10.8 10 14 11C17.2 10 17.5 6.5 15.5 4.6C17.5 4 19.5 5.5 19.5 8C19.5 13 14 17 14 17Z"
-              fill="var(--plasma-15)" stroke="var(--plasma)" strokeWidth=".6"/>
-            <circle cx="14" cy="3.2" r="2.4" fill="var(--plasma)" opacity=".9"/>
-          </svg>
+          <img src={logoSvg} width="28" height="28" alt="SolarNexa" />
           <span style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 17, color: 'var(--ink)', letterSpacing: '-.01em' }}>
-            SolarNexa
+            Solar<span style={{ color: 'var(--plasma)' }}>Nexa</span>
           </span>
+          <span style={{
+            fontFamily: 'var(--ui)', fontSize: 9, fontWeight: 500,
+            color: 'var(--ink-30)', letterSpacing: '.12em', textTransform: 'uppercase',
+            background: 'var(--paper-deep)', border: '1px solid var(--ink-10)',
+            borderRadius: 3, padding: '2px 6px', lineHeight: 1,
+          }}>Dashboard</span>
         </Link>
 
         {/* Desktop links */}
         <ul style={{ display: 'flex', gap: 32, listStyle: 'none', margin: 0, padding: 0 }}
             className="app-nav-links">
           {links.map(({ to, label, end }) => (
-            <li key={to}>
+            <li key={to} style={{ position: 'relative' }}>
               <NavLink to={to} end={end} style={({ isActive }) => ({
-                fontFamily: 'var(--ui)', fontSize: 13, fontWeight: isActive ? 500 : 400,
-                color: isActive ? 'var(--plasma)' : 'var(--ink-60)',
-                textDecoration: isActive ? 'underline' : 'none',
-                textUnderlineOffset: 4, letterSpacing: '.04em', textTransform: 'uppercase',
-                transition: 'color .2s',
+                fontFamily: 'var(--ui)', fontSize: 11.5, fontWeight: isActive ? 600 : 400,
+                color: isActive ? 'var(--ink)' : 'var(--ink-60)',
+                textDecoration: 'none',
+                letterSpacing: '.06em', textTransform: 'uppercase',
+                transition: 'color .2s', display: 'flex', alignItems: 'center', gap: 6,
+                padding: '0 4px', height: 64,
+                borderBottom: isActive ? '2px solid var(--plasma)' : '2px solid transparent',
               })}>
                 {label}
               </NavLink>

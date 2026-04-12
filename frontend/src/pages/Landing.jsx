@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import SNCursor from '../components/SNCursor.jsx'
 import SNParticles from '../components/SNParticles.jsx'
 import SNTreeCanvas from '../components/SNTreeCanvas.jsx'
+import SNMapModal from '../components/SNMapModal.jsx'
 import useReveal from '../hooks/useReveal.js'
+import logoSvg from '../assets/solarnexa-logo.svg'
 
 /* ── tiny helpers ─────────────────────────────────── */
 function scrollTo(id) {
@@ -11,32 +13,75 @@ function scrollTo(id) {
 }
 
 /* ── SNNav ────────────────────────────────────────── */
+const NAV_LINKS = [['product','Product'],['process','How it works'],['market','Market'],['roadmap','Roadmap'],['team','Team']]
+
 function SNNav() {
-  const [stuck, setStuck] = useState(false)
+  const [stuck, setStuck]   = useState(false)
+  const [active, setActive] = useState(null)
+  const [mopen, setMopen]   = useState(false)
+
   useEffect(() => {
-    const fn = () => setStuck(window.scrollY > 40)
-    window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
+    const onScroll = () => {
+      setStuck(window.scrollY > 40)
+      // highlight active section
+      const sections = NAV_LINKS.map(([id]) => document.getElementById(id)).filter(Boolean)
+      const inView = sections.filter(s => s.getBoundingClientRect().top < window.innerHeight * 0.55)
+      setActive(inView.length ? inView[inView.length - 1].id : null)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   return (
     <nav className={`sn-nav${stuck ? ' sn-nav--stuck' : ''}`}>
-      <a className="sn-nav__logo" href="#">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <path d="M14 26V17" stroke="var(--plasma)" strokeWidth="1.4" strokeLinecap="round"/>
-          <path d="M14 17C14 17 8.5 13 8.5 8C8.5 5.5 10.5 4 12.5 4.6C10.5 6.5 10.8 10 14 11C17.2 10 17.5 6.5 15.5 4.6C17.5 4 19.5 5.5 19.5 8C19.5 13 14 17 14 17Z" fill="var(--plasma-15)" stroke="var(--plasma)" strokeWidth=".6"/>
-          <circle cx="14" cy="3.2" r="2.4" fill="var(--plasma)" opacity=".9"/>
-        </svg>
-        SolarNexa
+      {/* Logo mark + wordmark */}
+      <a className="sn-nav__logo" href="#" onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+        <img src={logoSvg} width="30" height="30" alt="SolarNexa mark" className="sn-nav__logo-img" />
+        <span className="sn-nav__logo-word">Solar<em>Nexa</em></span>
+        <span className="sn-nav__logo-tag">CleanTech</span>
       </a>
+
+      {/* Nav links with active indicator */}
       <ul className="sn-nav__links">
-        {[['product','Product'],['process','How it works'],['market','Market'],['roadmap','Roadmap'],['team','Team']].map(([id,label]) => (
-          <li key={id}><a href={`#${id}`} onClick={e => { e.preventDefault(); scrollTo(id) }}>{label}</a></li>
+        {NAV_LINKS.map(([id, label]) => (
+          <li key={id}>
+            <a
+              href={`#${id}`}
+              className={active === id ? 'sn-nav__link--active' : ''}
+              onClick={e => { e.preventDefault(); scrollTo(id) }}
+            >
+              {label}
+              {active === id && <span className="sn-nav__link-dot" />}
+            </a>
+          </li>
         ))}
       </ul>
-      <Link to="/app" className="sn-nav__cta" style={{ cursor: 'none', textDecoration: 'none' }}>
-        Open Dashboard →
-      </Link>
+
+      {/* Right cluster */}
+      <div className="sn-nav__right">
+        <div className="sn-nav__status">
+          <span className="sn-nav__status-dot" />
+          <span>Phase 1 Live</span>
+        </div>
+        <Link to="/app" className="sn-nav__cta" style={{ cursor: 'none', textDecoration: 'none' }}>
+          Dashboard <span className="sn-nav__cta-arrow">↗</span>
+        </Link>
+      </div>
+
+      {/* Mobile hamburger */}
+      <button className="sn-nav__burger" onClick={() => setMopen(v => !v)} aria-label="Menu">
+        <span /><span /><span />
+      </button>
+
+      {/* Mobile drawer */}
+      {mopen && (
+        <div className="sn-nav__drawer">
+          {NAV_LINKS.map(([id, label]) => (
+            <a key={id} href={`#${id}`} onClick={e => { e.preventDefault(); scrollTo(id); setMopen(false) }}>{label}</a>
+          ))}
+          <Link to="/app" onClick={() => setMopen(false)} style={{ textDecoration: 'none' }}>Open Dashboard →</Link>
+        </div>
+      )}
     </nav>
   )
 }
@@ -268,17 +313,135 @@ function SNRoadmap() {
 }
 
 /* ── SNTeam ───────────────────────────────────────── */
-// Row 1: 5 members  |  Row 2: 3 members + "growing" teaser
+// Row 1: 5 members  |  Row 2: member + 3 interactive + "growing"
 const TEAM_R1 = [
-  { n: '01', av: 'LC', name: 'L E Chakrawarthy Sreenivas', role: 'Founder' },
-  { n: '02', av: 'CV', name: 'Chakireddy Varshitha',        role: 'Core Team' },
-  { n: '03', av: 'SP', name: 'Siddharth P J',               role: 'Core Team' },
-  { n: '04', av: 'SG', name: 'Subrat Gupta',                role: 'Core Team' },
-  { n: '05', av: 'HN', name: 'HemaSri Nemali',              role: 'Core Team' },
+  { n: '01', av: 'LC', name: 'L E Chakrawarthy Sreenivas', role: 'Founder',   photo: null },
+  { n: '02', av: 'CV', name: 'Chakireddy Varshitha',        role: 'Core Team', photo: null },
+  { n: '03', av: 'SP', name: 'Siddharth P J',               role: 'Core Team', photo: null },
+  { n: '04', av: 'SG', name: 'Subrat Gupta',                role: 'Core Team', photo: null },
+  { n: '05', av: 'HN', name: 'HemaSri Nemali',              role: 'Core Team', photo: null },
 ]
 const TEAM_R2 = [
-  { n: '06', av: 'SK', name: 'Santosh Krishna Bandla', role: 'Core Team' },
+  { n: '06', av: 'SK', name: 'Santosh Krishna Bandla', role: 'Core Team', photo: null },
 ]
+
+// How to add a photo: import it at the top of this file like:
+//   import lcPhoto from '../assets/team/lc.jpg'
+// then set photo: lcPhoto on the member object above.
+
+/* Live energy ticker cell */
+function TeamCellEnergy() {
+  const [kwh, setKwh] = useState(142.6)
+  const [co2, setCo2] = useState(58.3)
+  const [pulse, setPulse] = useState(false)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setKwh(v => +(v + (Math.random() * 0.4 - 0.05)).toFixed(1))
+      setCo2(v => +(v + (Math.random() * 0.15 - 0.02)).toFixed(1))
+      setPulse(true)
+      setTimeout(() => setPulse(false), 400)
+    }, 2200)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div className="sn-tcell sn-tcell--r2 sn-tcell--special sn-tcell--energy">
+      <span className="sn-tcell__num">07</span>
+      <div className="sn-tcell__special-label">Live output</div>
+      <div className={`sn-tcell__big-val${pulse ? ' sn-tcell__big-val--pulse' : ''}`}>{kwh}</div>
+      <div className="sn-tcell__big-unit">kWh today</div>
+      <div className="sn-tcell__sub-row">
+        <span>{co2} kg</span><span className="sn-tcell__sub-sep">·</span><span>CO₂ offset</span>
+      </div>
+      <div className="sn-tcell__energy-bar">
+        <div className="sn-tcell__energy-fill" style={{ width: `${Math.min(100, (kwh / 200) * 100)}%` }} />
+      </div>
+    </div>
+  )
+}
+
+/* Animated solar arc / yield meter cell */
+function TeamCellYield() {
+  const canvasRef = useRef(null)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    let frame, t = 0
+    const draw = () => {
+      ctx.clearRect(0, 0, 120, 120)
+      const cx = 60, cy = 68, r = 46
+      // track arc (bg)
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * 2.25)
+      ctx.strokeStyle = 'rgba(28,24,20,0.08)'
+      ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.stroke()
+      // fill arc
+      const pct = 0.72 + Math.sin(t * 0.018) * 0.08
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * (0.75 + 1.5 * pct))
+      ctx.strokeStyle = '#D93B2B'
+      ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.stroke()
+      // sun dot on arc tip
+      const angle = Math.PI * (0.75 + 1.5 * pct)
+      const sx = cx + r * Math.cos(angle), sy = cy + r * Math.sin(angle)
+      ctx.beginPath(); ctx.arc(sx, sy, 5, 0, Math.PI * 2)
+      ctx.fillStyle = '#FF9000'; ctx.fill()
+      // center text
+      ctx.fillStyle = '#1C1814'
+      ctx.font = '700 22px Fraunces, Georgia, serif'
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+      ctx.fillText(`${Math.round(pct * 100)}%`, cx, cy - 4)
+      ctx.font = '400 10px Inter Tight, sans-serif'
+      ctx.fillStyle = 'rgba(28,24,20,0.5)'
+      ctx.fillText('yield', cx, cy + 14)
+      t++; frame = requestAnimationFrame(draw)
+    }
+    draw()
+    return () => cancelAnimationFrame(frame)
+  }, [])
+  return (
+    <div className="sn-tcell sn-tcell--r2 sn-tcell--special sn-tcell--yield">
+      <span className="sn-tcell__num">08</span>
+      <div className="sn-tcell__special-label">Efficiency</div>
+      <canvas ref={canvasRef} width={120} height={120} className="sn-tcell__arc" />
+      <div className="sn-tcell__yield-note">N-Type tracking</div>
+    </div>
+  )
+}
+
+/* City deployment ping-map cell — click to open full map */
+function TeamCellMap({ onOpenMap }) {
+  const PINS = [
+    { x: 52, y: 57, active: true },
+    { x: 67, y: 41, active: true },
+    { x: 36, y: 67, active: false },
+    { x: 78, y: 60, active: false },
+    { x: 50, y: 34, active: false },
+  ]
+  return (
+    <div className="sn-tcell sn-tcell--r2 sn-tcell--special sn-tcell--map" onClick={onOpenMap} title="Click to open full map">
+      <span className="sn-tcell__num">09</span>
+      <div className="sn-tcell__special-label">Bengaluru rollout</div>
+      <div className="sn-tcell__map-stage">
+        {[20,35,50,65,80].map(y => <div key={y} className="sn-tcell__map-gridline" style={{ top: `${y}%` }} />)}
+        {[20,35,50,65,80].map(x => <div key={x} className="sn-tcell__map-gridline sn-tcell__map-gridline--v" style={{ left: `${x}%` }} />)}
+        {PINS.map((p, i) => (
+          <div key={i} className={`sn-tcell__pin${p.active ? ' sn-tcell__pin--on' : ''}`} style={{ left: `${p.x}%`, top: `${p.y}%` }}>
+            <div className="sn-tcell__pin-dot" />
+            {p.active && <div className="sn-tcell__pin-ring" />}
+          </div>
+        ))}
+      </div>
+      <div className="sn-tcell__map-footer">
+        <div className="sn-tcell__map-legend">
+          <span className="sn-tcell__map-dot sn-tcell__map-dot--on" />Live
+          <span className="sn-tcell__map-dot" style={{ marginLeft: 10 }} />Planned
+        </div>
+        <div className="sn-tcell__map-expand">Expand ↗</div>
+      </div>
+    </div>
+  )
+}
 
 function SNTeam() {
   return (
@@ -289,7 +452,8 @@ function SNTeam() {
       <div className="sn-team__bento reveal d2">
         {/* Row 1 */}
         {TEAM_R1.map(m => (
-          <div key={m.name} className="sn-tcell">
+          <div key={m.name} className="sn-tcell" style={m.photo ? { backgroundImage: `url(${m.photo})`, backgroundSize: 'cover', backgroundPosition: 'center top' } : undefined}>
+            {m.photo && <div className="sn-tcell__photo-overlay" />}
             <span className="sn-tcell__num">{m.n}</span>
             <div className="sn-tcell__av">{m.av}</div>
             <div className="sn-tcell__name">{m.name}</div>
@@ -297,9 +461,10 @@ function SNTeam() {
           </div>
         ))}
 
-        {/* Row 2 — member + empty placeholders + growing teaser */}
+        {/* Row 2 */}
         {TEAM_R2.map(m => (
-          <div key={m.name} className="sn-tcell sn-tcell--r2">
+          <div key={m.name} className="sn-tcell sn-tcell--r2" style={m.photo ? { backgroundImage: `url(${m.photo})`, backgroundSize: 'cover', backgroundPosition: 'center top' } : undefined}>
+            {m.photo && <div className="sn-tcell__photo-overlay" />}
             <span className="sn-tcell__num">{m.n}</span>
             <div className="sn-tcell__av">{m.av}</div>
             <div className="sn-tcell__name">{m.name}</div>
@@ -307,13 +472,10 @@ function SNTeam() {
           </div>
         ))}
 
-        {/* Empty filler cells */}
-        {[7, 8, 9].map(n => (
-          <div key={n} className="sn-tcell sn-tcell--r2" style={{ opacity: 0.35 }}>
-            <span className="sn-tcell__num">{String(n).padStart(2,'0')}</span>
-            <div className="sn-tcell__av" style={{ borderStyle: 'dashed' }} />
-          </div>
-        ))}
+        {/* Interactive special cells */}
+        <TeamCellEnergy />
+        <TeamCellYield />
+        <TeamCellMap />
 
         {/* "We're growing" teaser — last cell */}
         <div className="sn-tcell sn-tcell--r2 sn-tcell--grow">
@@ -345,11 +507,74 @@ function SNCTA() {
 }
 
 /* ── SNFooter ─────────────────────────────────────── */
+const FOOTER_LINKS = {
+  'Product':  ['SolarTree', 'EV Charging', 'BESS Storage', 'IoT Dashboard'],
+  'Company':  ['About', 'Team', 'Roadmap', 'Careers'],
+  'Connect':  ['contact@solarnexa.in', 'Bengaluru, India', 'Startup India ✓', 'MSME Registered'],
+}
+
 function SNFooter() {
+  const year = new Date().getFullYear()
   return (
     <footer className="sn-footer">
-      <div className="sn-footer__brand">Solar<span>Nexa</span></div>
-      <div className="sn-footer__copy">Charging Dreams, Not Carbon · 2023</div>
+      {/* Top glow accent */}
+      <div className="sn-footer__glow" />
+
+      <div className="sn-footer__inner">
+        {/* Brand column */}
+        <div className="sn-footer__brand-col">
+          <div className="sn-footer__logo">
+            <img src={logoSvg} width="36" height="36" alt="SolarNexa" className="sn-footer__logo-img" />
+            <span className="sn-footer__wordmark">Solar<em>Nexa</em></span>
+          </div>
+          <p className="sn-footer__tagline">
+            Charging Dreams,<br/>Not Carbon.
+          </p>
+          <div className="sn-footer__badges">
+            <span className="sn-footer__badge">CleanTech</span>
+            <span className="sn-footer__badge">EV Infra</span>
+            <span className="sn-footer__badge">Urban Energy</span>
+          </div>
+          {/* Live ticker */}
+          <div className="sn-footer__live">
+            <span className="sn-footer__live-dot" />
+            <span>Trees live in Bengaluru</span>
+          </div>
+        </div>
+
+        {/* Link columns */}
+        {Object.entries(FOOTER_LINKS).map(([heading, items]) => (
+          <div key={heading} className="sn-footer__col">
+            <div className="sn-footer__col-head">{heading}</div>
+            <ul className="sn-footer__col-list">
+              {items.map(item => (
+                <li key={item}><a href="#">{item}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+
+        {/* Stat column */}
+        <div className="sn-footer__stat-col">
+          {[['27%','CAGR'],['~1%','Footprint'],['+ 30%','Yield']].map(([val, lbl]) => (
+            <div key={lbl} className="sn-footer__stat">
+              <div className="sn-footer__stat-val">{val}</div>
+              <div className="sn-footer__stat-lbl">{lbl}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="sn-footer__bar">
+        <span>© {year} SolarNexa · Bengaluru · All rights reserved</span>
+        <span className="sn-footer__bar-sep" />
+        <span>Startup India Recognised · DPIIT Reference</span>
+        <span className="sn-footer__bar-sep" />
+        <a href="#" style={{ color: 'inherit' }}>Privacy</a>
+        <span className="sn-footer__bar-sep" />
+        <a href="#" style={{ color: 'inherit' }}>Terms</a>
+      </div>
     </footer>
   )
 }

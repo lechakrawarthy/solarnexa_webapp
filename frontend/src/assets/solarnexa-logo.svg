@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" fill="none">
+  <title>SolarNexa</title>
+
+  <!-- Sun corona — outer glow ring -->
+  <circle cx="80" cy="38" r="22" fill="none" stroke="#D93B2B" stroke-width="1" opacity="0.2"/>
+  <circle cx="80" cy="38" r="17" fill="none" stroke="#D93B2B" stroke-width="1" opacity="0.35"/>
+
+  <!-- Sun rays — 8 short dashes radiating outward -->
+  <g stroke="#D93B2B" stroke-width="1.4" stroke-linecap="round" opacity="0.7">
+    <line x1="80" y1="12"  x2="80" y2="18"/>
+    <line x1="80" y1="58"  x2="80" y2="64"/>
+    <line x1="56" y1="14"  x2="59" y2="19.2"/>
+    <line x1="104" y1="14" x2="101" y2="19.2"/>
+    <line x1="44" y1="38"  x2="50" y2="38"/>
+    <line x1="110" y1="38" x2="116" y2="38"/>
+    <line x1="56" y1="62"  x2="59" y2="56.8"/>
+    <line x1="104" y1="62" x2="101" y2="56.8"/>
+  </g>
+
+  <!-- Sun core -->
+  <circle cx="80" cy="38" r="11" fill="#D93B2B"/>
+  <!-- Sun inner highlight -->
+  <circle cx="76" cy="34" r="3.5" fill="#FF9000" opacity="0.6"/>
+
+  <!-- Trunk — tapered rectangle -->
+  <path d="M75 70 L76 132 L84 132 L85 70 Z" fill="#1C1814" opacity="0.85"/>
+  <!-- Trunk highlight streak -->
+  <path d="M77 70 L77.5 132" stroke="rgba(217,59,43,0.15)" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- Left branch 1 -->
+  <path d="M80 88 Q64 84 52 76" stroke="#1C1814" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Right branch 1 -->
+  <path d="M80 88 Q96 84 108 76" stroke="#1C1814" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Left branch 2 -->
+  <path d="M80 102 Q60 96 44 90" stroke="#1C1814" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <!-- Right branch 2 -->
+  <path d="M80 102 Q100 96 116 90" stroke="#1C1814" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <!-- Left twig -->
+  <path d="M80 78 Q70 74 62 70" stroke="#1C1814" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <!-- Right twig -->
+  <path d="M80 78 Q90 74 98 70" stroke="#1C1814" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+
+  <!-- Solar panels — dark rhomboids at branch tips -->
+  <!-- Left panel 1 -->
+  <g transform="rotate(-8, 52, 76)">
+    <rect x="40" y="70" width="24" height="14" rx="3" fill="#2A2520"/>
+    <rect x="40" y="70" width="24" height="14" rx="3" stroke="#D93B2B" stroke-width="0.7" opacity="0.5"/>
+    <line x1="52" y1="70" x2="52" y2="84" stroke="#D93B2B" stroke-width="0.4" opacity="0.4"/>
+    <line x1="40" y1="77" x2="64" y2="77" stroke="#D93B2B" stroke-width="0.4" opacity="0.4"/>
+  </g>
+  <!-- Right panel 1 -->
+  <g transform="rotate(8, 108, 76)">
+    <rect x="96" y="70" width="24" height="14" rx="3" fill="#2A2520"/>
+    <rect x="96" y="70" width="24" height="14" rx="3" stroke="#D93B2B" stroke-width="0.7" opacity="0.5"/>
+    <line x1="108" y1="70" x2="108" y2="84" stroke="#D93B2B" stroke-width="0.4" opacity="0.4"/>
+    <line x1="96" y1="77" x2="120" y2="77" stroke="#D93B2B" stroke-width="0.4" opacity="0.4"/>
+  </g>
+  <!-- Left panel 2 -->
+  <g transform="rotate(-14, 44, 90)">
+    <rect x="32" y="85" width="22" height="12" rx="2.5" fill="#2A2520" opacity="0.9"/>
+    <rect x="32" y="85" width="22" height="12" rx="2.5" stroke="#D93B2B" stroke-width="0.6" opacity="0.4"/>
+    <line x1="43" y1="85" x2="43" y2="97" stroke="#D93B2B" stroke-width="0.35" opacity="0.35"/>
+    <line x1="32" y1="91" x2="54" y2="91" stroke="#D93B2B" stroke-width="0.35" opacity="0.35"/>
+  </g>
+  <!-- Right panel 2 -->
+  <g transform="rotate(14, 116, 90)">
+    <rect x="106" y="85" width="22" height="12" rx="2.5" fill="#2A2520" opacity="0.9"/>
+    <rect x="106" y="85" width="22" height="12" rx="2.5" stroke="#D93B2B" stroke-width="0.6" opacity="0.4"/>
+    <line x1="117" y1="85" x2="117" y2="97" stroke="#D93B2B" stroke-width="0.35" opacity="0.35"/>
+    <line x1="106" y1="91" x2="128" y2="91" stroke="#D93B2B" stroke-width="0.35" opacity="0.35"/>
+  </g>
+  <!-- Center top panel -->
+  <g transform="rotate(0, 80, 70)">
+    <rect x="68" y="64" width="24" height="14" rx="3" fill="#2A2520"/>
+    <rect x="68" y="64" width="24" height="14" rx="3" stroke="#D93B2B" stroke-width="0.8" opacity="0.6"/>
+    <line x1="80" y1="64" x2="80" y2="78" stroke="#D93B2B" stroke-width="0.5" opacity="0.45"/>
+    <line x1="68" y1="71" x2="92" y2="71" stroke="#D93B2B" stroke-width="0.5" opacity="0.45"/>
+  </g>
+
+  <!-- Ground / base platform -->
+  <rect x="58" y="132" width="44" height="6" rx="3" fill="#1C1814" opacity="0.12"/>
+  <rect x="66" y="136" width="28" height="4" rx="2" fill="#1C1814" opacity="0.08"/>
+
+  <!-- EV charge connector wire — links trunk base to charge point -->
+  <path d="M80 138 L80 142" stroke="#D93B2B" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <!-- EV charge station box — connected to trunk -->
+  <rect x="71" y="142" width="18" height="11" rx="3" fill="#1C1814" opacity="0.75"/>
+  <rect x="71" y="142" width="18" height="11" rx="3" stroke="#D93B2B" stroke-width="0.8" opacity="0.5"/>
+  <!-- Lightning bolt inside station -->
+  <path d="M81.5 144.5 L79 148.5 L81 148.5 L78.5 152.5" stroke="#D93B2B" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+</svg>

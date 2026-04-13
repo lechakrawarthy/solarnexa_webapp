@@ -501,7 +501,7 @@ function SNCTA() {
   return (
     <section className="sn-cta">
       <div className="sn-cta__glow" />
-      <div className="sn-cta__eyebrow reveal">Startup India Recognised · Bengaluru · 2023</div>
+      <div className="sn-cta__eyebrow reveal">CleanTech · Bengaluru · 2023</div>
       <h2 className="sn-cta__title reveal d1">Plant your first<br/><em>solar tree.</em></h2>
       <p className="sn-cta__sub reveal d2">We're building the infrastructure layer for India's clean urban future. Let's place one tree at a time.</p>
       <div className="sn-cta__actions reveal d3">
@@ -516,73 +516,84 @@ function SNCTA() {
 }
 
 /* ── SNFooter ─────────────────────────────────────── */
-const FOOTER_LINKS = {
-  'Product':  ['SolarTree', 'EV Charging', 'BESS Storage', 'IoT Dashboard'],
-  'Company':  ['About', 'Team', 'Roadmap', 'Careers'],
-  'Connect':  ['contact@solarnexa.in', 'Bengaluru, India', 'Startup India ✓', 'MSME Registered'],
-}
+const FOOTER_NAV = [
+  { heading: 'Product',  items: ['SolarTree', 'EV Charging', 'BESS Storage', 'IoT Dashboard'] },
+  { heading: 'Company',  items: ['About', 'Team', 'Roadmap', 'Careers'] },
+  { heading: 'Connect',  items: ['contact@solarnexa.in', 'Bengaluru, India'] },
+]
 
 function SNFooter() {
   const year = new Date().getFullYear()
   return (
     <footer className="sn-footer">
-      {/* Top glow accent */}
       <div className="sn-footer__glow" />
 
-      <div className="sn-footer__inner">
-        {/* Brand column */}
-        <div className="sn-footer__brand-col">
+      {/* ── Top section: brand + nav ── */}
+      <div className="sn-footer__top">
+
+        {/* Brand block */}
+        <div className="sn-footer__brand-block">
           <div className="sn-footer__logo">
-            <img src={logoSvg} width="36" height="36" alt="SolarNexa" className="sn-footer__logo-img" />
-            <span className="sn-footer__wordmark">Solar<em>Nexa</em></span>
+            <img src={logoSvg} width="44" height="44" alt="SolarNexa" />
+            <div>
+              <div className="sn-footer__wordmark">Solar<em>Nexa</em></div>
+              <div className="sn-footer__location">Bengaluru, India</div>
+            </div>
           </div>
+
+          {/* Tagline — large display type, the hero of the brand block */}
           <p className="sn-footer__tagline">
-            Charging Dreams,<br/>Not Carbon.
+            <span style={{ color: '#ffffff', display: 'block' }}>Charging Dreams,</span>
+            <em>Not Carbon.</em>
           </p>
+
           <div className="sn-footer__badges">
             <span className="sn-footer__badge">CleanTech</span>
-            <span className="sn-footer__badge">EV Infra</span>
+            <span className="sn-footer__badge">EV Infrastructure</span>
             <span className="sn-footer__badge">Urban Energy</span>
-          </div>
-          {/* Live ticker */}
-          <div className="sn-footer__live">
-            <span className="sn-footer__live-dot" />
-            <span>Trees live in Bengaluru</span>
           </div>
         </div>
 
-        {/* Link columns */}
-        {Object.entries(FOOTER_LINKS).map(([heading, items]) => (
-          <div key={heading} className="sn-footer__col">
-            <div className="sn-footer__col-head">{heading}</div>
-            <ul className="sn-footer__col-list">
-              {items.map(item => (
-                <li key={item}><a href="#">{item}</a></li>
-              ))}
-            </ul>
-          </div>
-        ))}
-
-        {/* Stat column */}
-        <div className="sn-footer__stat-col">
-          {[['27%','CAGR'],['~1%','Footprint'],['+ 30%','Yield']].map(([val, lbl]) => (
-            <div key={lbl} className="sn-footer__stat">
-              <div className="sn-footer__stat-val">{val}</div>
-              <div className="sn-footer__stat-lbl">{lbl}</div>
+        {/* Nav columns */}
+        <div className="sn-footer__nav">
+          {FOOTER_NAV.map(({ heading, items }) => (
+            <div key={heading} className="sn-footer__col">
+              <div className="sn-footer__col-head">{heading}</div>
+              <ul className="sn-footer__col-list">
+                {items.map(item => (
+                  <li key={item}><a href="#">{item}</a></li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* ── Stats band ── */}
+      <div className="sn-footer__stats-band">
+        {[
+          { val: '27%',  lbl: 'Market CAGR',       note: 'Solar EV infra India' },
+          { val: '~1%',  lbl: 'Ground footprint',   note: 'vs. flat panel equivalent' },
+          { val: '+30%', lbl: 'Energy yield',        note: 'N-Type + tracking' },
+          { val: 'L2',   lbl: 'EV charging',         note: 'Fast charge, off-grid ready' },
+        ].map(({ val, lbl, note }) => (
+          <div key={lbl} className="sn-footer__stat">
+            <div className="sn-footer__stat-val">{val}</div>
+            <div className="sn-footer__stat-lbl">{lbl}</div>
+            <div className="sn-footer__stat-note">{note}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Bottom bar ── */}
       <div className="sn-footer__bar">
-        <span>© {year} SolarNexa · Bengaluru · All rights reserved</span>
+        <span>© {year} SolarNexa. All rights reserved.</span>
         <span className="sn-footer__bar-sep" />
-        <span>Startup India Recognised · DPIIT Reference</span>
+        <span>Made in Bengaluru</span>
         <span className="sn-footer__bar-sep" />
-        <a href="#" style={{ color: 'inherit' }}>Privacy</a>
+        <a href="#">Privacy</a>
         <span className="sn-footer__bar-sep" />
-        <a href="#" style={{ color: 'inherit' }}>Terms</a>
+        <a href="#">Terms</a>
       </div>
     </footer>
   )

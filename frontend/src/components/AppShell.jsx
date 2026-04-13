@@ -6,7 +6,6 @@ const links = [
   { to: '/app',               label: 'Dashboard',     end: true  },
   { to: '/app/installations', label: 'Installations', end: false },
   { to: '/app/analytics',     label: 'Analytics',     end: false },
-  { to: '/app/about',         label: 'About',         end: false },
 ]
 
 export default function AppShell() {
@@ -124,6 +123,30 @@ export default function AppShell() {
           ))}
         </div>
       )}
+
+      {/* ── Showcase banner ──────────────────────────── */}
+      <div style={{
+        background: 'var(--ink)',
+        borderBottom: '1px solid var(--ink-10)',
+        padding: '10px 48px',
+        display: 'flex', alignItems: 'center', gap: 12,
+      }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontFamily: 'var(--ui)', fontSize: 10, fontWeight: 600,
+          color: 'var(--plasma)', letterSpacing: '.14em', textTransform: 'uppercase',
+          background: 'rgba(217,59,43,0.12)', border: '1px solid rgba(217,59,43,0.25)',
+          borderRadius: 4, padding: '3px 8px', flexShrink: 0,
+        }}>
+          ◆ Preview
+        </span>
+        <span style={{
+          fontFamily: 'var(--ui)', fontSize: 12, color: 'rgba(248,245,238,0.5)',
+          letterSpacing: '.02em',
+        }}>
+          This is a showcase of how the live dashboard will look once SolarNexa installations go live.
+        </span>
+      </div>
 
       {/* ── Page content ─────────────────────────────── */}
       <main style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 56px' }} className="app-main">

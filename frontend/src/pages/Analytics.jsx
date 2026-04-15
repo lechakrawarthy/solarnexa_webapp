@@ -84,7 +84,11 @@ export default function Analytics() {
       axios.get('/api/analytics/monthly'),
       axios.get('/api/analytics/by-type'),
     ])
-      .then(([w, m, t]) => { setWeekly(w.data.data); setMonthly(m.data.data); setByType(t.data.data) })
+      .then(([w, m, t]) => {
+        setWeekly(w.data.data ?? [])
+        setMonthly(m.data.data ?? [])
+        setByType(t.data.data ?? [])
+      })
       .catch(() => setError('Could not load analytics.'))
       .finally(() => setLoading(false))
   }, [])

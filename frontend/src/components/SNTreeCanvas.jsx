@@ -480,6 +480,9 @@ export default function SNTreeCanvas() {
 
     // ── Main loop ──────────────────────────────────────
     function draw() {
+      // Skip heavy drawing when tab is not visible — saves CPU/GPU
+      if (document.hidden) { raf = requestAnimationFrame(draw); return }
+
       ctx.clearRect(0, 0, W, H)
       t++
 
@@ -525,6 +528,8 @@ export default function SNTreeCanvas() {
       width={480}
       height={520}
       style={{ maxWidth: '100%', opacity: 0, animation: 'sn-fadein 1s 0.6s ease forwards' }}
+      aria-label="SolarTree animation — solar tree charging station with EV and IoT monitoring"
+      role="img"
     />
   )
 }

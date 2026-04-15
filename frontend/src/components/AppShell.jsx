@@ -14,7 +14,7 @@ export default function AppShell() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--paper)', fontFamily: 'var(--ui)', color: 'var(--ink)' }}>
 
-      {/* ── Navbar — matches landing architectural grid-line style ── */}
+      {/* ── Navbar — exact same grid-line visual language as landing nav ── */}
       <nav style={{
         position: 'sticky', top: 0, zIndex: 200,
         background: 'rgba(248,245,238,0.94)',
@@ -22,27 +22,30 @@ export default function AppShell() {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         display: 'flex', alignItems: 'stretch',
-        height: 64,
+        height: 66,
       }}>
-        {/* Brand */}
+        {/* Brand — same height/proportion as landing nav logo */}
         <Link to="/" style={{
           display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none',
           padding: '0 40px 0 48px',
           borderRight: '1px solid var(--ink-10)', flexShrink: 0,
         }}>
-          <img src={logoSvg} width="26" height="26" alt="SolarNexa" />
-          <span style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 16, color: 'var(--ink)', letterSpacing: '-.015em', whiteSpace: 'nowrap' }}>
+          <img src={logoSvg} width="28" height="28" alt="SolarNexa" loading="eager" />
+          <span style={{
+            fontFamily: 'var(--display)', fontWeight: 600, fontSize: 17,
+            color: 'var(--ink)', letterSpacing: '-.015em', whiteSpace: 'nowrap',
+          }}>
             Solar<span style={{ color: 'var(--plasma)' }}>Nexa</span>
           </span>
           <span style={{
             fontFamily: 'var(--ui)', fontSize: 9, fontWeight: 500,
-            color: 'var(--ink-30)', letterSpacing: '.12em', textTransform: 'uppercase',
+            color: 'var(--ink-30)', letterSpacing: '.14em', textTransform: 'uppercase',
             background: 'var(--paper-deep)', border: '1px solid var(--ink-10)',
             borderRadius: 3, padding: '2px 6px', lineHeight: 1, flexShrink: 0,
-          }}>Dashboard</span>
+          }}>OS</span>
         </Link>
 
-        {/* Desktop links — grid-line separated */}
+        {/* Desktop links */}
         <ul style={{
           display: 'flex', listStyle: 'none', margin: 0, padding: 0,
           flex: 1,
@@ -52,14 +55,14 @@ export default function AppShell() {
             <li key={to} style={{ borderRight: '1px solid var(--ink-10)', display: 'flex' }}>
               <NavLink to={to} end={end} style={({ isActive }) => ({
                 display: 'flex', alignItems: 'center',
-                fontFamily: 'var(--ui)', fontSize: 11, fontWeight: isActive ? 600 : 400,
+                fontFamily: 'var(--ui)', fontSize: 11.5, fontWeight: isActive ? 600 : 400,
                 color: isActive ? 'var(--ink)' : 'var(--ink-60)',
                 textDecoration: 'none',
-                letterSpacing: '.07em', textTransform: 'uppercase',
+                letterSpacing: '.06em', textTransform: 'uppercase',
                 padding: '0 22px',
                 borderBottom: isActive ? '2px solid var(--plasma)' : '2px solid transparent',
-                background: isActive ? 'rgba(28,24,20,0.02)' : 'transparent',
-                transition: 'color .15s, background .15s',
+                background: isActive ? 'rgba(217,59,43,0.02)' : 'transparent',
+                transition: 'color .2s, background .2s',
                 whiteSpace: 'nowrap',
               })}>
                 {label}
@@ -68,21 +71,39 @@ export default function AppShell() {
           ))}
         </ul>
 
-        {/* Right: back to site */}
-        <Link to="/" style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '0 28px',
-          fontFamily: 'var(--ui)', fontSize: 11, fontWeight: 500,
-          color: 'var(--ink-60)', textDecoration: 'none',
-          letterSpacing: '.06em', textTransform: 'uppercase',
-          transition: 'color .15s',
-          flexShrink: 0,
-        }} className="app-nav-back"
-          onMouseEnter={e => e.currentTarget.style.color = 'var(--ink)'}
-          onMouseLeave={e => e.currentTarget.style.color = 'var(--ink-60)'}
-        >
-          ← Site
-        </Link>
+        {/* Right side: phase status + back to site */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 0,
+          borderLeft: 'none', flexShrink: 0,
+        }} className="app-nav-right">
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 7, padding: '0 24px',
+            borderRight: '1px solid var(--ink-10)',
+            fontFamily: 'var(--ui)', fontSize: 11, fontWeight: 500,
+            color: '#16a34a', letterSpacing: '.05em',
+          }}>
+            <span style={{
+              width: 7, height: 7, borderRadius: '50%', background: '#22c55e',
+              boxShadow: '0 0 0 2px rgba(34,197,94,0.25)',
+              animation: 'nav-pulse 2s ease-in-out infinite',
+            }} />
+            Phase 1 Live
+          </div>
+          <Link to="/" style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '0 28px',
+            fontFamily: 'var(--ui)', fontSize: 11, fontWeight: 500,
+            color: 'var(--ink-60)', textDecoration: 'none',
+            letterSpacing: '.06em', textTransform: 'uppercase',
+            transition: 'color .15s',
+            whiteSpace: 'nowrap',
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--ink)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--ink-60)'}
+          >
+            ← Site
+          </Link>
+        </div>
 
         {/* Mobile toggle */}
         <button
@@ -121,14 +142,17 @@ export default function AppShell() {
               {label}
             </NavLink>
           ))}
+          <Link to="/" style={{
+            fontFamily: 'var(--ui)', fontSize: 13, color: 'var(--ink-60)',
+            textDecoration: 'none', padding: '16px 24px', letterSpacing: '.06em',
+          }}>← Back to site</Link>
         </div>
       )}
 
-      {/* ── Showcase banner ──────────────────────────── */}
+      {/* ── Preview banner — reframed as a feature, not an apology ── */}
       <div style={{
         background: 'var(--ink)',
-        borderBottom: '1px solid var(--ink-10)',
-        padding: '10px 48px',
+        padding: '11px 48px',
         display: 'flex', alignItems: 'center', gap: 12,
       }}>
         <span style={{
@@ -138,13 +162,13 @@ export default function AppShell() {
           background: 'rgba(217,59,43,0.12)', border: '1px solid rgba(217,59,43,0.25)',
           borderRadius: 4, padding: '3px 8px', flexShrink: 0,
         }}>
-          ◆ Preview
+          ◆ SolarNexa OS
         </span>
         <span style={{
-          fontFamily: 'var(--ui)', fontSize: 12, color: 'rgba(248,245,238,0.5)',
-          letterSpacing: '.02em',
+          fontFamily: 'var(--ui)', fontSize: 12, color: 'rgba(248,245,238,0.45)',
+          letterSpacing: '.01em',
         }}>
-          This is a showcase of how the live dashboard will look once SolarNexa installations go live.
+          Live fleet intelligence — simulating a Bengaluru 6-unit deployment. Real data goes live with Phase 1.
         </span>
       </div>
 
@@ -154,9 +178,13 @@ export default function AppShell() {
       </main>
 
       <style>{`
+        @keyframes nav-pulse {
+          0%, 100% { box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+          50% { box-shadow: 0 0 0 5px rgba(34,197,94,0.1); }
+        }
         @media (max-width: 768px) {
           .app-nav-links    { display: none !important; }
-          .app-nav-back     { display: none !important; }
+          .app-nav-right    { display: none !important; }
           .app-main         { padding: 32px 24px !important; }
         }
         @media (min-width: 769px) {

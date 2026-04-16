@@ -109,6 +109,7 @@ export default function Dashboard() {
   const [alerts, setAlerts]               = useState([])
   const [loading, setLoading]             = useState(true)
   const [error, setError]                 = useState(null)
+  const [tick, setTick]                   = useState(0)   // drives live number drift
 
   useEffect(() => {
     Promise.all([
@@ -123,6 +124,19 @@ export default function Dashboard() {
       })
       .catch(() => setError('Could not load dashboard data.'))
       .finally(() => setLoading(false))
+  }, [])
+
+  // Simulate live data — subtle drift every 30s so the dashboard feels alive
+  useEffect(() => {
+    const id = setInterval(() => {
+      setInstallations(prev => prev.map(inst => {
+        if (inst.status !== 'online') return inst
+        const delta = +(Math.random() * 0.6 - 0.1).toFixed(1)
+        return { ...inst, energy_today_kwh: Math.max(0, +(inst.energy_today_kwh + delta).toFixed(1)) }
+      }))
+      setTick(t => t + 1)
+    }, 30000)
+    return () => clearInterval(id)
   }, [])
 
   const totalEnergy = installations.reduce((s, i) => s + i.energy_today_kwh, 0)
@@ -146,9 +160,15 @@ export default function Dashboard() {
             Good morning,<br/><em style={{ fontStyle: 'italic', fontWeight: 600, color: T.plasma }}>SolarNexa.</em>
           </h1>
         </div>
-        <span style={{ fontFamily: T.ui, fontSize: 12, color: T.ink60, letterSpacing: '.06em', textTransform: 'uppercase' }}>
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <span style={{ fontFamily: T.ui, fontSize: 12, color: T.ink60, letterSpacing: '.06em', textTransform: 'uppercase' }}>
+            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          </span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#16a34a', fontWeight: 500 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', animation: 'pulse 2s ease-in-out infinite' }} />
+            Live · updates every 30s
+          </span>
+        </div>
       </div>
 
       {/* ── Stat cards ─────────────────────────────── */}

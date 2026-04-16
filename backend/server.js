@@ -1,9 +1,11 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import { Resend } from 'resend'
 
 const app = express()
 const PORT = process.env.PORT || 5000
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 app.use(cors())
 app.use(express.json())
@@ -173,6 +175,47 @@ app.get('/api/analytics/by-type', (_req, res) => {
 
 app.get('/api/alerts', (_req, res) => {
   res.json({ data: alerts, total: alerts.length })
+})
+
+// ─── Contact form ─────────────────────────────────────────────────────────────
+// POST /api/contact  { name, org, usecase, message, email }
+app.post('/api/contact', async (req, res) => {
+  const { name, org, usecase, message, email } = req.body ?? {}
+
+  if (!name || !message) {
+    return res.status(400).json({ error: 'name and message are required' })
+  }
+
+  // If no API key set yet (e.g. local dev), just log and return success
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[contact] No RESEND_API_KEY — logging submission:', { name, org, usecase, message, email })
+    return res.json({ ok: true, note: 'logged (no API key)' })
+  }
+
+  try {
+    await resend.emails.send({
+      from: 'SolarNexa Contact <onboarding@resend.dev>',  // swap for contact@solarnexa.in once domain is verified
+      to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
+      reply_to: email || undefined,
+      subject: `New inquiry from ${name}${org ? ` — ${org}` : ''}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px">
+          <h2 style="color:#D93B2B;margin-bottom:4px">SolarNexa — New Inquiry</h2>
+          <hr style="border:none;border-top:1px solid #eee;margin:16px 0"/>
+          <p><strong>Name:</strong> ${name}</p>
+          ${org ? `<p><strong>Organisation:</strong> ${org}</p>` : ''}
+          ${usecase ? `<p><strong>Use case:</strong> ${usecase}</p>` : ''}
+          ${email ? `<p><strong>Email:</strong> ${email}</p>` : ''}
+          <hr style="border:none;border-top:1px solid #eee;margin:16px 0"/>
+          <p style="white-space:pre-wrap">${message}</p>
+        </div>
+      `,
+    })
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('[contact] Resend error:', err)
+    res.status(500).json({ error: 'Failed to send — please email us directly at contact@solarnexa.in' })
+  }
 })
 
 // ─── Error Handlers ───────────────────────────────────────────────────────────

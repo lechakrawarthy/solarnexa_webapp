@@ -301,14 +301,14 @@ function SNRoadmap() {
 
 /* ── SNTeam ───────────────────────────────────────── */
 const TEAM_R1 = [
-  { n: '01', av: 'SK', name: 'Santosh Krishna Bandla', role: 'Core Team',   photo: skPhoto },
-  { n: '02', av: 'CV', name: 'Chakireddy Varshitha',   role: 'Core Team',   photo: cvPhoto },
-  { n: '03', av: 'SP', name: 'Siddharth P J',          role: 'Core Team',   photo: spPhoto },
-  { n: '04', av: 'SG', name: 'Subrat Gupta',           role: 'Core Team',   photo: sgPhoto },
-  { n: '05', av: 'HN', name: 'HemaSri Nemali',         role: 'Core Team',   photo: hnPhoto },
+  { n: '01', av: 'SK', name: 'Santosh Krishna Bandla', role: 'Core Team',   bio: 'Operations & delivery',         photo: skPhoto },
+  { n: '02', av: 'CV', name: 'Chakireddy Varshitha',   role: 'Core Team',   bio: 'Product & user experience',    photo: cvPhoto },
+  { n: '03', av: 'SP', name: 'Siddharth P J',          role: 'Core Team',   bio: 'Engineering & prototyping',    photo: spPhoto },
+  { n: '04', av: 'SG', name: 'Subrat Gupta',           role: 'Core Team',   bio: 'Research & sustainability',    photo: sgPhoto },
+  { n: '05', av: 'HN', name: 'HemaSri Nemali',         role: 'Core Team',   bio: 'Strategy & partnerships',      photo: hnPhoto },
 ]
 const TEAM_R2 = [
-  { n: '06', av: 'LC', name: 'L E Chakrawarthy Sreenivas', role: 'Founder', photo: lcPhoto },
+  { n: '06', av: 'LC', name: 'L E Chakrawarthy Sreenivas', role: 'Founder', bio: 'Building the infrastructure layer for India\'s clean urban future.', photo: lcPhoto },
 ]
 
 /* Live energy ticker cell */
@@ -438,17 +438,19 @@ function SNTeam() {
             <div className="sn-tcell__av">{m.av}</div>
             <div className="sn-tcell__name">{m.name}</div>
             <div className="sn-tcell__role">{m.role}</div>
+            {m.bio && <div className="sn-tcell__bio">{m.bio}</div>}
           </div>
         ))}
 
-        {/* Row 2 */}
+        {/* Row 2 — founder */}
         {TEAM_R2.map(m => (
-          <div key={m.name} className="sn-tcell sn-tcell--r2" style={m.photo ? { backgroundImage: `url(${m.photo})`, backgroundSize: 'cover', backgroundPosition: 'center top' } : undefined}>
+          <div key={m.name} className="sn-tcell sn-tcell--r2 sn-tcell--founder" style={m.photo ? { backgroundImage: `url(${m.photo})`, backgroundSize: 'cover', backgroundPosition: 'center top' } : undefined}>
             {m.photo && <div className="sn-tcell__photo-overlay" />}
             <span className="sn-tcell__num">{m.n}</span>
             <div className="sn-tcell__av">{m.av}</div>
             <div className="sn-tcell__name">{m.name}</div>
-            <div className="sn-tcell__role">{m.role}</div>
+            <div className="sn-tcell__role sn-tcell__role--founder">{m.role}</div>
+            {m.bio && <div className="sn-tcell__bio sn-tcell__bio--founder">{m.bio}</div>}
           </div>
         ))}
 
@@ -471,22 +473,33 @@ function SNTeam() {
 
 /* ── SNContact ────────────────────────────────────── */
 function SNContact() {
-  const [form, setForm] = useState({ name: '', org: '', usecase: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', org: '', usecase: '', message: '' })
   const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
+  const [err, setErr] = useState(null)
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault()
     setSending(true)
-    // mailto fallback until backend form handler is wired
-    const subject = encodeURIComponent(`SolarNexa inquiry from ${form.name}${form.org ? ` — ${form.org}` : ''}`)
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nOrganisation: ${form.org}\nUse case: ${form.usecase}\n\n${form.message}`
-    )
-    window.location.href = `mailto:contact@solarnexa.in?subject=${subject}&body=${body}`
-    setTimeout(() => { setSending(false); setSent(true) }, 600)
+    setErr(null)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        throw new Error(d.error || 'Something went wrong')
+      }
+      setSent(true)
+    } catch (e) {
+      setErr(e.message || 'Failed to send. Please email contact@solarnexa.in directly.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -516,30 +529,37 @@ function SNContact() {
             <form className="sn-contact__form" onSubmit={handleSubmit} noValidate>
               <div className="sn-contact__row">
                 <div className="sn-contact__field">
-                  <label className="sn-contact__label">Your name</label>
+                  <label className="sn-contact__label">Your name *</label>
                   <input className="sn-contact__input" name="name" value={form.name} onChange={handleChange} placeholder="Priya Sharma" required autoComplete="name" />
                 </div>
+                <div className="sn-contact__field">
+                  <label className="sn-contact__label">Email address</label>
+                  <input className="sn-contact__input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="priya@company.in" autoComplete="email" />
+                </div>
+              </div>
+              <div className="sn-contact__row">
                 <div className="sn-contact__field">
                   <label className="sn-contact__label">Organisation</label>
                   <input className="sn-contact__input" name="org" value={form.org} onChange={handleChange} placeholder="Sunrise Developers" autoComplete="organization" />
                 </div>
+                <div className="sn-contact__field">
+                  <label className="sn-contact__label">Use case</label>
+                  <select className="sn-contact__input sn-contact__select" name="usecase" value={form.usecase} onChange={handleChange}>
+                    <option value="">Select one…</option>
+                    <option value="Urban plaza / public space">Urban plaza / public space</option>
+                    <option value="Corporate campus">Corporate campus</option>
+                    <option value="EV fleet charging">EV fleet charging</option>
+                    <option value="Gated community / residential">Gated community / residential</option>
+                    <option value="Municipality / government">Municipality / government</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
               <div className="sn-contact__field">
-                <label className="sn-contact__label">Use case</label>
-                <select className="sn-contact__input sn-contact__select" name="usecase" value={form.usecase} onChange={handleChange}>
-                  <option value="">Select one…</option>
-                  <option value="Urban plaza / public space">Urban plaza / public space</option>
-                  <option value="Corporate campus">Corporate campus</option>
-                  <option value="EV fleet charging">EV fleet charging</option>
-                  <option value="Gated community / residential">Gated community / residential</option>
-                  <option value="Municipality / government">Municipality / government</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div className="sn-contact__field">
-                <label className="sn-contact__label">Message</label>
+                <label className="sn-contact__label">Message *</label>
                 <textarea className="sn-contact__input sn-contact__textarea" name="message" value={form.message} onChange={handleChange} placeholder="Tell us about your project, location, and timeline…" rows={4} required />
               </div>
+              {err && <p style={{ fontSize: 13, color: 'var(--plasma)', margin: 0 }}>{err}</p>}
               <button type="submit" className="sn-btn sn-btn--primary sn-contact__submit" disabled={sending} style={{ cursor: 'none' }}>
                 {sending ? 'Sending…' : 'Send message'} <span className="sn-btn__arrow">→</span>
               </button>

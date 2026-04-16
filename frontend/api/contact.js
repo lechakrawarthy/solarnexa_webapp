@@ -35,7 +35,7 @@ export default async function handler(req, res) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                from: process.env.CONTACT_FROM_EMAIL || 'SolarNexa Contact <onboarding@resend.dev>',
+                from: process.env.CONTACT_FROM_EMAIL || 'solarnexa.info@gmail.com',
                 to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
                 reply_to: email || undefined,
                 subject: `New inquiry from ${name}${org ? ` - ${org}` : ''}`,

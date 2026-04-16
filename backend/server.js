@@ -194,7 +194,7 @@ app.post('/api/contact', async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: 'SolarNexa Contact <onboarding@resend.dev>',  // swap for contact@solarnexa.in once domain is verified
+      from: 'solarnexa.info@gmail.com',
       to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
       reply_to: email || undefined,
       subject: `New inquiry from ${name}${org ? ` — ${org}` : ''}`,

@@ -202,7 +202,7 @@ app.post('/api/contact', async (req, res) => {
   try {
     await resend.emails.send({
       from,
-      to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
+      to: [process.env.CONTACT_TO_EMAIL || 'solarnexa.info@gmail.com'],
       reply_to: email || undefined,
       subject: `New inquiry from ${name}${org ? ` — ${org}` : ''}`,
       html: `
@@ -221,7 +221,8 @@ app.post('/api/contact', async (req, res) => {
     res.json({ ok: true })
   } catch (err) {
     console.error('[contact] Resend error:', err)
-    res.status(500).json({ error: 'Failed to send — please email us directly at contact@solarnexa.in' })
+    const detail = err?.message || err?.name || 'Unexpected provider error'
+    res.status(500).json({ error: `Failed to send — ${detail}` })
   }
 })
 

@@ -6,6 +6,16 @@ function json(res, status, payload) {
     return res.send(JSON.stringify(payload))
 }
 
+function getProviderErrorDetail(raw) {
+    if (!raw) return 'Unknown provider error'
+    try {
+        const parsed = JSON.parse(raw)
+        return parsed?.message || parsed?.error || raw
+    } catch {
+        return raw
+    }
+}
+
 export default async function handler(req, res) {
     if (req.method === 'OPTIONS') {
         res.setHeader('Allow', 'POST, OPTIONS')
@@ -36,7 +46,7 @@ export default async function handler(req, res) {
 
     try {
         const basePayload = {
-            to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
+            to: [process.env.CONTACT_TO_EMAIL || 'solarnexa.info@gmail.com'],
             reply_to: email || undefined,
             subject: `New inquiry from ${name}${org ? ` - ${org}` : ''}`,
             html: `
@@ -72,13 +82,14 @@ export default async function handler(req, res) {
 
         if (!response.ok) {
             const errBody = await response.text()
-            console.error('[contact] Resend API error:', response.status, errBody)
-            return json(res, 500, { error: 'Failed to send - please email us directly at contact@solarnexa.in' })
+            const detail = getProviderErrorDetail(errBody)
+            console.error('[contact] Resend API error:', response.status, detail)
+            return json(res, 500, { error: `Failed to send - ${detail}` })
         }
 
         return json(res, 200, { ok: true })
     } catch (err) {
         console.error('[contact] Unexpected error:', err)
-        return json(res, 500, { error: 'Failed to send - please email us directly at contact@solarnexa.in' })
+        return json(res, 500, { error: `Failed to send - ${err?.message || 'Unexpected server error'}` })
     }
 }

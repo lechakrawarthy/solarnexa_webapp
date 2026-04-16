@@ -6,19 +6,19 @@
    SOLARNEXA DESIGN SYSTEM — TOKEN LAYER
 ══════════════════════════════════════════════════════ */
 :root {
-  --ink: #1C1814;
-  --ink-60: rgba(28, 24, 20, 0.72);
-  --ink-30: rgba(28, 24, 20, 0.3);
-  --ink-10: rgba(28, 24, 20, 0.08);
-  --ink-05: rgba(28, 24, 20, 0.04);
-  --paper: #F8F5EE;
-  --paper-warm: #F2EDE3;
-  --paper-deep: #EBE5D8;
-  --plasma: #D93B2B;
-  --plasma-60: rgba(217, 59, 43, 0.6);
-  --plasma-15: rgba(217, 59, 43, 0.15);
-  --plasma-06: rgba(217, 59, 43, 0.06);
-  --cream: #FAF8F3;
+  --ink: #1B2E1B;
+  --ink-60: rgba(27, 46, 27, 0.72);
+  --ink-30: rgba(27, 46, 27, 0.3);
+  --ink-10: rgba(27, 46, 27, 0.08);
+  --ink-05: rgba(27, 46, 27, 0.04);
+  --paper: #F4F0E6;
+  --paper-warm: #EAE3D2;
+  --paper-deep: #DDD4BE;
+  --plasma: #E07A1A;
+  --plasma-60: rgba(224, 122, 26, 0.6);
+  --plasma-15: rgba(224, 122, 26, 0.15);
+  --plasma-06: rgba(224, 122, 26, 0.06);
+  --cream: #F8F4EA;
   --display: 'Fraunces', Georgia, serif;
   --ui: 'Inter Tight', system-ui, sans-serif;
   --r-sm: 6px;
@@ -123,7 +123,7 @@
 }
 
 .sn-nav--stuck {
-  background: rgba(248, 245, 238, 0.94);
+  background: rgba(244, 240, 230, 0.94);
   box-shadow: 0 1px 0 var(--ink-10);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -318,7 +318,7 @@
   border-bottom: 1px solid var(--ink-10);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 12px 40px rgba(28, 24, 20, 0.1);
+  box-shadow: 0 12px 40px rgba(27, 46, 27, 0.1);
 }
 
 .sn-nav__drawer a {
@@ -506,12 +506,12 @@
 
 .sn-btn--ghost-light {
   background: transparent;
-  color: rgba(248, 245, 238, 0.9);
-  border: 1.5px solid rgba(248, 245, 238, 0.42);
+  color: rgba(244, 240, 230, 0.9);
+  border: 1.5px solid rgba(244, 240, 230, 0.42);
 }
 
 .sn-btn--ghost-light:hover {
-  border-color: rgba(248, 245, 238, 0.72);
+  border-color: rgba(244, 240, 230, 0.72);
   color: var(--paper);
 }
 
@@ -641,7 +641,7 @@
 .sn-fcard:hover {
   border-color: var(--ink-30);
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(28, 24, 20, 0.06);
+  box-shadow: 0 12px 40px rgba(27, 46, 27, 0.06);
 }
 
 .sn-fcard--wide {
@@ -668,7 +668,7 @@
 
 .sn-fcard--hero .sn-fcard__title,
 .sn-fcard--hero .sn-fcard__body {
-  color: rgba(248, 245, 238, 0.9);
+  color: rgba(244, 240, 230, 0.9);
 }
 
 .sn-fcard--hero .sn-fcard__title {
@@ -689,7 +689,7 @@
 }
 
 .sn-fcard--hero .sn-fcard__num {
-  color: rgba(248, 245, 238, 0.04);
+  color: rgba(244, 240, 230, 0.04);
 }
 
 .sn-fcard:hover .sn-fcard__num {
@@ -719,8 +719,8 @@
 }
 
 .sn-fcard--hero .sn-fcard__icon {
-  background: rgba(217, 59, 43, 0.2);
-  border-color: rgba(217, 59, 43, 0.4);
+  background: rgba(224, 122, 26, 0.2);
+  border-color: rgba(224, 122, 26, 0.4);
 }
 
 .sn-fcard__label {
@@ -1236,14 +1236,14 @@
 
 .sn-tcell__bio--founder {
   font-size: 12px;
-  color: rgba(248, 245, 238, 0.5);
+  color: rgba(244, 240, 230, 0.5);
   font-style: italic;
   margin-top: 8px;
   line-height: 1.5;
 }
 
 .sn-tcell--founder {
-  border: 1px solid rgba(217, 59, 43, 0.15) !important;
+  border: 1px solid rgba(224, 122, 26, 0.15) !important;
 }
 
 /* On photo cells, bio text needs the counter-filter treatment already applied to children */
@@ -1301,14 +1301,14 @@
   background:
     /* bottom dark fade — ensures text always legible */
     linear-gradient(to bottom,
-      rgba(28, 24, 20, 0.0) 0%,
-      rgba(28, 24, 20, 0.0) 30%,
-      rgba(28, 24, 20, 0.65) 100%),
+      rgba(27, 46, 27, 0.0) 0%,
+      rgba(27, 46, 27, 0.0) 30%,
+      rgba(27, 46, 27, 0.65) 100%),
     /* plasma-warm sepia tint at ~60% — the cohesion layer */
     linear-gradient(160deg,
-      rgba(217, 59, 43, 0.22) 0%,
-      rgba(242, 180, 100, 0.28) 40%,
-      rgba(28, 24, 20, 0.15) 100%);
+      rgba(224, 122, 26, 0.22) 0%,
+      rgba(224, 122, 26, 0.28) 40%,
+      rgba(27, 46, 27, 0.15) 100%);
   mix-blend-mode: multiply;
 }
 
@@ -1322,21 +1322,21 @@
 
 /* Avatar on photo cell — opaque so initials read clearly */
 .sn-tcell[style*="background-image"] .sn-tcell__av {
-  background: rgba(248, 245, 238, 0.92);
-  border-color: rgba(248, 245, 238, 0.5);
+  background: rgba(244, 240, 230, 0.92);
+  border-color: rgba(244, 240, 230, 0.5);
 }
 
 /* Name / role on photo — lighter to read on dark fade */
 .sn-tcell[style*="background-image"] .sn-tcell__name {
-  color: rgba(248, 245, 238, 0.95);
+  color: rgba(244, 240, 230, 0.95);
 }
 
 .sn-tcell[style*="background-image"] .sn-tcell__role {
-  color: rgba(248, 245, 238, 0.55);
+  color: rgba(244, 240, 230, 0.55);
 }
 
 .sn-tcell[style*="background-image"] .sn-tcell__num {
-  color: rgba(248, 245, 238, 0.3);
+  color: rgba(244, 240, 230, 0.3);
 }
 
 .sn-tcell> :not(.sn-tcell__photo-overlay) {
@@ -1610,7 +1610,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 60% 70% at 50% 100%, rgba(217, 59, 43, 0.18) 0%, transparent 60%);
+  background: radial-gradient(ellipse 60% 70% at 50% 100%, rgba(224, 122, 26, 0.18) 0%, transparent 60%);
 }
 
 .sn-cta__eyebrow {
@@ -1643,7 +1643,7 @@
 
 .sn-cta__sub {
   font-size: 16px;
-  color: rgba(248, 245, 238, 0.94);
+  color: rgba(244, 240, 230, 0.94);
   margin-top: 22px;
   font-weight: 400;
   line-height: 1.7;
@@ -1662,7 +1662,7 @@
 
 .sn-cta__note {
   font-size: 11px;
-  color: rgba(248, 245, 238, 0.86);
+  color: rgba(244, 240, 230, 0.86);
   margin-top: 28px;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -1672,7 +1672,7 @@
 
 /* ── Footer ────────────────────────────────────────── */
 .sn-footer {
-  background: #141010;
+  background: #0E1E0E;
   /* slightly darker than --ink so it reads as a new section */
   border-top: 2px solid var(--plasma);
   /* plasma line = hard break from CTA */
@@ -1688,15 +1688,15 @@
   z-index: 0;
   /* pushed to bottom-left corner only — doesn't touch the text area */
   background:
-    radial-gradient(ellipse 55% 40% at -10% 130%, rgba(217, 59, 43, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 35% 45% at 110% -5%, rgba(217, 59, 43, 0.06) 0%, transparent 50%);
+    radial-gradient(ellipse 55% 40% at -10% 130%, rgba(224, 122, 26, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 45% at 110% -5%, rgba(224, 122, 26, 0.06) 0%, transparent 50%);
 }
 
 /* ── Top section ── */
 .sn-footer__top {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid rgba(248, 245, 238, 0.07);
+  border-bottom: 1px solid rgba(244, 240, 230, 0.07);
   position: relative;
   z-index: 1;
 }
@@ -1704,7 +1704,7 @@
 /* Brand block */
 .sn-footer__brand-block {
   padding: 72px 64px 64px;
-  border-right: 1px solid rgba(248, 245, 238, 0.07);
+  border-right: 1px solid rgba(244, 240, 230, 0.07);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -1722,7 +1722,7 @@
   font-family: var(--display);
   font-size: 22px;
   font-weight: 600;
-  color: rgba(248, 245, 238, 0.85);
+  color: rgba(244, 240, 230, 0.85);
   letter-spacing: -.02em;
   line-height: 1;
 }
@@ -1734,7 +1734,7 @@
 
 .sn-footer__location {
   font-size: 11px;
-  color: rgba(248, 245, 238, 0.3);
+  color: rgba(244, 240, 230, 0.3);
   letter-spacing: .08em;
   text-transform: uppercase;
   margin-top: 4px;
@@ -1769,9 +1769,9 @@
   font-weight: 500;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: rgba(248, 245, 238, 0.45);
-  background: rgba(248, 245, 238, 0.05);
-  border: 1px solid rgba(248, 245, 238, 0.1);
+  color: rgba(244, 240, 230, 0.45);
+  background: rgba(244, 240, 230, 0.05);
+  border: 1px solid rgba(244, 240, 230, 0.1);
   border-radius: 4px;
   padding: 5px 12px;
 }
@@ -1791,7 +1791,7 @@
 .sn-footer__col-head {
   font-size: 10px;
   font-weight: 600;
-  color: rgba(248, 245, 238, 0.28);
+  color: rgba(244, 240, 230, 0.28);
   letter-spacing: .16em;
   text-transform: uppercase;
   margin-bottom: 24px;
@@ -1806,7 +1806,7 @@
 
 .sn-footer__col-list a {
   font-size: 14px;
-  color: rgba(248, 245, 238, 0.55);
+  color: rgba(244, 240, 230, 0.55);
   text-decoration: none;
   font-weight: 400;
   transition: color .2s;
@@ -1814,21 +1814,21 @@
 }
 
 .sn-footer__col-list a:hover {
-  color: rgba(248, 245, 238, 0.9);
+  color: rgba(244, 240, 230, 0.9);
 }
 
 /* ── Stats band ── */
 .sn-footer__stats-band {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid rgba(248, 245, 238, 0.07);
+  border-bottom: 1px solid rgba(244, 240, 230, 0.07);
   position: relative;
   z-index: 1;
 }
 
 .sn-footer__stat {
   padding: 36px 40px;
-  border-right: 1px solid rgba(248, 245, 238, 0.07);
+  border-right: 1px solid rgba(244, 240, 230, 0.07);
 }
 
 .sn-footer__stat:last-child {
@@ -1848,7 +1848,7 @@
 .sn-footer__stat-lbl {
   font-size: 11px;
   font-weight: 600;
-  color: rgba(248, 245, 238, 0.6);
+  color: rgba(244, 240, 230, 0.6);
   text-transform: uppercase;
   letter-spacing: .1em;
   margin-bottom: 4px;
@@ -1856,7 +1856,7 @@
 
 .sn-footer__stat-note {
   font-size: 11px;
-  color: rgba(248, 245, 238, 0.25);
+  color: rgba(244, 240, 230, 0.25);
   letter-spacing: .02em;
 }
 
@@ -1868,7 +1868,7 @@
   flex-wrap: wrap;
   padding: 20px 64px;
   font-size: 11px;
-  color: rgba(248, 245, 238, 0.22);
+  color: rgba(244, 240, 230, 0.22);
   letter-spacing: .05em;
   position: relative;
   z-index: 1;
@@ -1881,13 +1881,13 @@
 }
 
 .sn-footer__bar a:hover {
-  color: rgba(248, 245, 238, 0.55);
+  color: rgba(244, 240, 230, 0.55);
 }
 
 .sn-footer__bar-sep {
   width: 1px;
   height: 12px;
-  background: rgba(248, 245, 238, 0.1);
+  background: rgba(244, 240, 230, 0.1);
   display: inline-block;
   flex-shrink: 0;
 }
@@ -1992,8 +1992,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 65% 55% at 80% 50%, rgba(217, 59, 43, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 60% at 0% 100%, rgba(217, 59, 43, 0.08) 0%, transparent 50%);
+    radial-gradient(ellipse 65% 55% at 80% 50%, rgba(224, 122, 26, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 0% 100%, rgba(224, 122, 26, 0.08) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -2023,7 +2023,7 @@
   font-weight: 300;
   line-height: 1.04;
   letter-spacing: -.025em;
-  color: rgba(248, 245, 238, 0.92);
+  color: rgba(244, 240, 230, 0.92);
   margin-top: 4px;
   margin-bottom: 28px;
 }
@@ -2036,7 +2036,7 @@
 
 .sn-mission__body {
   font-size: 15px;
-  color: rgba(248, 245, 238, 0.88);
+  color: rgba(244, 240, 230, 0.88);
   line-height: 1.85;
   font-weight: 400;
   margin-bottom: 16px;
@@ -2045,7 +2045,7 @@
 .sn-mission__stat {
   margin-top: 40px;
   padding-top: 32px;
-  border-top: 1px solid rgba(248, 245, 238, 0.1);
+  border-top: 1px solid rgba(244, 240, 230, 0.1);
   display: flex;
   align-items: baseline;
   gap: 16px;
@@ -2062,7 +2062,7 @@
 
 .sn-mission__stat-desc {
   font-size: 13px;
-  color: rgba(248, 245, 238, 0.72);
+  color: rgba(244, 240, 230, 0.72);
   max-width: 200px;
   line-height: 1.5;
 }
@@ -2073,7 +2073,7 @@
   font-weight: 300;
   line-height: 1.2;
   letter-spacing: -.02em;
-  color: rgba(248, 245, 238, 0.85);
+  color: rgba(244, 240, 230, 0.85);
   margin-bottom: 40px;
 }
 
@@ -2094,8 +2094,8 @@
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  background: rgba(248, 245, 238, 0.03);
-  border: 1px solid rgba(248, 245, 238, 0.07);
+  background: rgba(244, 240, 230, 0.03);
+  border: 1px solid rgba(244, 240, 230, 0.07);
   border-radius: var(--r-md);
   padding: 22px 24px;
   transition: background .3s, border-color .3s;
@@ -2103,8 +2103,8 @@
 }
 
 .sn-usecase:hover {
-  background: rgba(248, 245, 238, 0.06);
-  border-color: rgba(217, 59, 43, 0.25);
+  background: rgba(244, 240, 230, 0.06);
+  border-color: rgba(224, 122, 26, 0.25);
 }
 
 .sn-usecase__icon {
@@ -2112,8 +2112,8 @@
   height: 40px;
   border-radius: var(--r-sm);
   flex-shrink: 0;
-  background: rgba(217, 59, 43, 0.12);
-  border: 1px solid rgba(217, 59, 43, 0.25);
+  background: rgba(224, 122, 26, 0.12);
+  border: 1px solid rgba(224, 122, 26, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2129,14 +2129,14 @@
   font-family: var(--display);
   font-size: 15px;
   font-weight: 600;
-  color: rgba(248, 245, 238, 0.9);
+  color: rgba(244, 240, 230, 0.9);
   margin-bottom: 6px;
   letter-spacing: -.01em;
 }
 
 .sn-usecase__desc {
   font-size: 13px;
-  color: rgba(248, 245, 238, 0.8) !important;
+  color: rgba(244, 240, 230, 0.8) !important;
   line-height: 1.65;
   margin: 0;
   font-weight: 400;
@@ -2436,7 +2436,7 @@
   .sn-footer__brand-block {
     padding: 48px 24px 40px;
     border-right: none;
-    border-bottom: 1px solid rgba(248, 245, 238, 0.07);
+    border-bottom: 1px solid rgba(244, 240, 230, 0.07);
   }
 
   .sn-footer__tagline {

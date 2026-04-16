@@ -848,7 +848,7 @@
   color: rgba(248,245,238,0.9); margin-bottom: 6px; letter-spacing: -.01em;
 }
 .sn-usecase__desc {
-  font-size: 13px; color: rgba(248,245,238,0.45); line-height: 1.65; margin: 0; font-weight: 400;
+  font-size: 13px; color: rgba(248,245,238,0.45) !important; line-height: 1.65; margin: 0; font-weight: 400;
 }
 
 /* ── Contact section ───────────────────────────────── */

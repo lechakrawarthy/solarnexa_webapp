@@ -2087,7 +2087,7 @@
 .sn-mission__usecases {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 14px;
 }
 
 .sn-usecase {

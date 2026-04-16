@@ -103,13 +103,19 @@ function StatusPill({ status }) {
   )
 }
 
+function getGreeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 17) return 'Good afternoon'
+  return 'Good evening'
+}
+
 export default function Dashboard() {
   const [installations, setInstallations] = useState([])
   const [weekly, setWeekly]               = useState([])
   const [alerts, setAlerts]               = useState([])
   const [loading, setLoading]             = useState(true)
   const [error, setError]                 = useState(null)
-  const [tick, setTick]                   = useState(0)   // drives live number drift
 
   useEffect(() => {
     Promise.all([
@@ -134,7 +140,6 @@ export default function Dashboard() {
         const delta = +(Math.random() * 0.6 - 0.1).toFixed(1)
         return { ...inst, energy_today_kwh: Math.max(0, +(inst.energy_today_kwh + delta).toFixed(1)) }
       }))
-      setTick(t => t + 1)
     }, 30000)
     return () => clearInterval(id)
   }, [])
@@ -157,7 +162,7 @@ export default function Dashboard() {
           <h1 style={{ fontFamily: T.display, fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300,
             letterSpacing: '-.03em', lineHeight: .98, color: T.ink, margin: 0,
           }}>
-            Good morning,<br/><em style={{ fontStyle: 'italic', fontWeight: 600, color: T.plasma }}>SolarNexa.</em>
+            {getGreeting()},<br/><em style={{ fontStyle: 'italic', fontWeight: 600, color: T.plasma }}>SolarNexa.</em>
           </h1>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>

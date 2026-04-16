@@ -83,7 +83,10 @@ export default function About() {
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 80% at 100% 100%, rgba(217,59,43,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
         <div style={{ fontFamily: T.ui, fontSize: 11, letterSpacing: '.18em', textTransform: 'uppercase', color: T.plasma, marginBottom: 16 }}>Our Mission</div>
         <p style={{ fontFamily: T.display, fontSize: 'clamp(20px,2.2vw,28px)', fontWeight: 300, color: 'rgba(248,245,238,0.9)', lineHeight: 1.35, maxWidth: 640, letterSpacing: '-.02em', marginBottom: 32 }}>
-          SolarNexa is transforming urban energy with <strong style={{ fontWeight: 700, color: T.plasma }}>SolarTrees</strong> — solar charging stations that provide clean energy for electric vehicles, designed to belong in the city.
+          Urban India is running out of flat land for solar. EV adoption is accelerating with nowhere clean to charge. SolarNexa builds at that intersection — infrastructure that municipalities want, developers need, and commuters use every day.
+        </p>
+        <p style={{ fontFamily: T.display, fontSize: 'clamp(20px,2.2vw,28px)', fontWeight: 300, color: 'rgba(248,245,238,0.9)', lineHeight: 1.35, maxWidth: 640, letterSpacing: '-.02em', marginBottom: 32 }}>
+          The SolarTree uses the vertical dimension. It occupies a parking bay, not a field. It belongs in a plaza. It charges a car, a phone, and the grid — from a single tree.
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
           {[['27%','Market CAGR'],['~1%','Ground Footprint'],['+ 30%','Yield via Tracking'],['Bengaluru','HQ']].map(([val, lbl]) => (

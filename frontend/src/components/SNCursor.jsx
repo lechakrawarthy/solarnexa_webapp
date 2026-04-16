@@ -8,6 +8,9 @@ export default function SNCursor() {
   const rafRef = useRef(null)
 
   useEffect(() => {
+    // Disable on touch-only / no-pointer devices — saves paint cycles, avoids ghost cursor
+    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return
+
     const cursor = cursorRef.current
     const dot    = dotRef.current
     const ring   = ringRef.current
@@ -19,7 +22,7 @@ export default function SNCursor() {
       dot.style.left = e.clientX + 'px'
       dot.style.top  = e.clientY + 'px'
     }
-    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mousemove', onMove, { passive: true })
 
     const animRing = () => {
       const { mx, my } = pos.current
@@ -31,7 +34,7 @@ export default function SNCursor() {
     }
     rafRef.current = requestAnimationFrame(animRing)
 
-    const hoverSels = 'a,button,.sn-metric,.sn-tag,.sn-cc,.sn-fcard,.sn-tcard,.sn-road__phase,.sn-process__step'
+    const hoverSels = 'a,button,.sn-metric,.sn-tag,.sn-cc,.sn-fcard,.sn-tcard,.sn-road__phase,.sn-process__step,.sn-usecase'
     const textSels  = 'p,h1,h2,h3,.sn-fcard__body,.sn-process__desc'
 
     const addHover = () => cursor.classList.add('sn-cursor--hover')
@@ -55,7 +58,7 @@ export default function SNCursor() {
   }, [])
 
   return (
-    <div className="sn-cursor" ref={cursorRef}>
+    <div className="sn-cursor" ref={cursorRef} aria-hidden="true">
       <div className="sn-cursor__dot"  ref={dotRef} />
       <div className="sn-cursor__ring" ref={ringRef} />
     </div>

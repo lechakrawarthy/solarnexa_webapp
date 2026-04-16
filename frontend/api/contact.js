@@ -1,5 +1,6 @@
 const RESEND_API_URL = 'https://api.resend.com/emails'
 const DEFAULT_FROM = 'SolarNexa Contact <onboarding@resend.dev>'
+const DEFAULT_TEST_TO = 'chakravarthi1597@gmail.com'
 
 function json(res, status, payload) {
     res.status(status).setHeader('Content-Type', 'application/json')
@@ -14,6 +15,10 @@ function getProviderErrorDetail(raw) {
     } catch {
         return raw
     }
+}
+
+function isResendTestingRecipientError(detail) {
+    return String(detail || '').toLowerCase().includes('you can only send testing emails to your own email address')
 }
 
 export default async function handler(req, res) {
@@ -45,8 +50,11 @@ export default async function handler(req, res) {
         : configuredFrom
 
     try {
+        const primaryTo = (process.env.CONTACT_TO_EMAIL || '').trim() || DEFAULT_TEST_TO
+        const testTo = (process.env.RESEND_TEST_TO_EMAIL || '').trim() || DEFAULT_TEST_TO
+
         const basePayload = {
-            to: [process.env.CONTACT_TO_EMAIL || 'solarnexa.info@gmail.com'],
+            to: [primaryTo],
             reply_to: email || undefined,
             subject: `New inquiry from ${name}${org ? ` - ${org}` : ''}`,
             html: `
@@ -63,13 +71,13 @@ export default async function handler(req, res) {
         `,
         }
 
-        const sendWithFrom = sender => fetch(RESEND_API_URL, {
+        const sendWithFrom = (sender, toAddress = primaryTo) => fetch(RESEND_API_URL, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ...basePayload, from: sender }),
+            body: JSON.stringify({ ...basePayload, from: sender, to: [toAddress] }),
         })
 
         let response = await sendWithFrom(from)
@@ -78,6 +86,18 @@ export default async function handler(req, res) {
             const firstError = await response.text()
             console.error('[contact] Primary sender failed, retrying with default sender:', response.status, firstError)
             response = await sendWithFrom(DEFAULT_FROM)
+        }
+
+        if (!response.ok) {
+            const firstRecipientError = await response.text()
+            const detail = getProviderErrorDetail(firstRecipientError)
+            if (isResendTestingRecipientError(detail) && primaryTo.toLowerCase() !== testTo.toLowerCase()) {
+                console.error('[contact] Recipient blocked in testing mode, retrying with test recipient:', testTo)
+                response = await sendWithFrom(DEFAULT_FROM, testTo)
+            } else {
+                console.error('[contact] Resend API error:', response.status, detail)
+                return json(res, 500, { error: `Failed to send - ${detail}` })
+            }
         }
 
         if (!response.ok) {

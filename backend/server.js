@@ -7,6 +7,7 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const resend = new Resend(process.env.RESEND_API_KEY)
 const DEFAULT_FROM = 'SolarNexa Contact <onboarding@resend.dev>'
+const DEFAULT_TEST_TO = 'chakravarthi1597@gmail.com'
 
 app.use(cors())
 app.use(express.json())
@@ -198,11 +199,13 @@ app.post('/api/contact', async (req, res) => {
   const from = !configuredFrom || normalizedFrom.includes('@gmail.com')
     ? DEFAULT_FROM
     : configuredFrom
+  const primaryTo = (process.env.CONTACT_TO_EMAIL || '').trim() || DEFAULT_TEST_TO
+  const testTo = (process.env.RESEND_TEST_TO_EMAIL || '').trim() || DEFAULT_TEST_TO
 
   try {
     await resend.emails.send({
       from,
-      to: [process.env.CONTACT_TO_EMAIL || 'solarnexa.info@gmail.com'],
+      to: [primaryTo],
       reply_to: email || undefined,
       subject: `New inquiry from ${name}${org ? ` — ${org}` : ''}`,
       html: `
@@ -222,6 +225,35 @@ app.post('/api/contact', async (req, res) => {
   } catch (err) {
     console.error('[contact] Resend error:', err)
     const detail = err?.message || err?.name || 'Unexpected provider error'
+    const testingRecipientBlocked = String(detail).toLowerCase().includes('you can only send testing emails to your own email address')
+
+    if (testingRecipientBlocked && primaryTo.toLowerCase() !== testTo.toLowerCase()) {
+      try {
+        await resend.emails.send({
+          from: DEFAULT_FROM,
+          to: [testTo],
+          reply_to: email || undefined,
+          subject: `[TEST MODE] New inquiry from ${name}${org ? ` — ${org}` : ''}`,
+          html: `
+            <div style="font-family:sans-serif;max-width:560px">
+              <h2 style="color:#D93B2B;margin-bottom:4px">SolarNexa — New Inquiry (Test Mode Fallback)</h2>
+              <p><strong>Original intended recipient:</strong> ${primaryTo}</p>
+              <hr style="border:none;border-top:1px solid #eee;margin:16px 0"/>
+              <p><strong>Name:</strong> ${name}</p>
+              ${org ? `<p><strong>Organisation:</strong> ${org}</p>` : ''}
+              ${usecase ? `<p><strong>Use case:</strong> ${usecase}</p>` : ''}
+              ${email ? `<p><strong>Email:</strong> ${email}</p>` : ''}
+              <hr style="border:none;border-top:1px solid #eee;margin:16px 0"/>
+              <p style="white-space:pre-wrap">${message}</p>
+            </div>
+          `,
+        })
+        return res.json({ ok: true, note: `Delivered to test recipient ${testTo} due to Resend testing restrictions` })
+      } catch (retryErr) {
+        console.error('[contact] Resend fallback retry failed:', retryErr)
+      }
+    }
+
     res.status(500).json({ error: `Failed to send — ${detail}` })
   }
 })

@@ -6,6 +6,7 @@ import { Resend } from 'resend'
 const app = express()
 const PORT = process.env.PORT || 5000
 const resend = new Resend(process.env.RESEND_API_KEY)
+const DEFAULT_FROM = 'SolarNexa Contact <onboarding@resend.dev>'
 
 app.use(cors())
 app.use(express.json())
@@ -192,9 +193,15 @@ app.post('/api/contact', async (req, res) => {
     return res.json({ ok: true, note: 'logged (no API key)' })
   }
 
+  const configuredFrom = (process.env.CONTACT_FROM_EMAIL || '').trim()
+  const normalizedFrom = configuredFrom.toLowerCase()
+  const from = !configuredFrom || normalizedFrom.includes('@gmail.com')
+    ? DEFAULT_FROM
+    : configuredFrom
+
   try {
     await resend.emails.send({
-      from: process.env.CONTACT_FROM_EMAIL || 'SolarNexa Contact <onboarding@resend.dev>',
+      from,
       to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
       reply_to: email || undefined,
       subject: `New inquiry from ${name}${org ? ` — ${org}` : ''}`,

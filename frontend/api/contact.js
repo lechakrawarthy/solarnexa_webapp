@@ -1,4 +1,5 @@
 const RESEND_API_URL = 'https://api.resend.com/emails'
+const DEFAULT_FROM = 'SolarNexa Contact <onboarding@resend.dev>'
 
 function json(res, status, payload) {
     res.status(status).setHeader('Content-Type', 'application/json')
@@ -27,19 +28,18 @@ export default async function handler(req, res) {
         return json(res, 200, { ok: true, note: 'logged (no API key)' })
     }
 
+    const configuredFrom = (process.env.CONTACT_FROM_EMAIL || '').trim()
+    const normalizedFrom = configuredFrom.toLowerCase()
+    const from = !configuredFrom || normalizedFrom.includes('@gmail.com')
+        ? DEFAULT_FROM
+        : configuredFrom
+
     try {
-        const response = await fetch(RESEND_API_URL, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                from: process.env.CONTACT_FROM_EMAIL || 'solarnexa.info@gmail.com',
-                to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
-                reply_to: email || undefined,
-                subject: `New inquiry from ${name}${org ? ` - ${org}` : ''}`,
-                html: `
+        const basePayload = {
+            to: [process.env.CONTACT_TO_EMAIL || 'contact@solarnexa.in'],
+            reply_to: email || undefined,
+            subject: `New inquiry from ${name}${org ? ` - ${org}` : ''}`,
+            html: `
           <div style="font-family:sans-serif;max-width:560px">
             <h2 style="color:#D93B2B;margin-bottom:4px">SolarNexa - New Inquiry</h2>
             <hr style="border:none;border-top:1px solid #eee;margin:16px 0"/>
@@ -51,8 +51,24 @@ export default async function handler(req, res) {
             <p style="white-space:pre-wrap">${message}</p>
           </div>
         `,
-            }),
+        }
+
+        const sendWithFrom = sender => fetch(RESEND_API_URL, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ...basePayload, from: sender }),
         })
+
+        let response = await sendWithFrom(from)
+
+        if (!response.ok && from !== DEFAULT_FROM) {
+            const firstError = await response.text()
+            console.error('[contact] Primary sender failed, retrying with default sender:', response.status, firstError)
+            response = await sendWithFrom(DEFAULT_FROM)
+        }
 
         if (!response.ok) {
             const errBody = await response.text()

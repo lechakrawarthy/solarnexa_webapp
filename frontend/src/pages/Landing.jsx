@@ -204,13 +204,10 @@ function SNMission() {
             <em>different kind of energy.</em>
           </h2>
           <p className="sn-mission__body">
-            Urban India is running out of flat land for solar. EV adoption is accelerating with nowhere
-            clean to charge. SolarNexa builds at that intersection — infrastructure that municipalities
-            want, developers need, and commuters use every day.
+            Urban India is running out of flat land for solar. EV adoption is accelerating with nowhere clean to charge. SolarNexa builds at that intersection — infrastructure that municipalities want, developers need, and commuters use every day.
           </p>
           <p className="sn-mission__body">
-            The SolarTree uses the vertical dimension. It occupies a parking bay, not a field.
-            It belongs in a plaza. It charges a car, a phone, and the grid — from a single tree.
+            The SolarTree uses the vertical dimension. It occupies a parking bay, not a field. It belongs in a plaza. It charges a car, a phone, and the grid — from a single tree.
           </p>
           <div className="sn-mission__stat">
             <span className="sn-mission__stat-val">27%</span>

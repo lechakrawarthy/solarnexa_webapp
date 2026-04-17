@@ -4,7 +4,11 @@ import SNCursor from '../components/SNCursor.jsx'
 import SNParticles from '../components/SNParticles.jsx'
 import SNTreeCanvas from '../components/SNTreeCanvas.jsx'
 import SNMapModal from '../components/SNMapModal.jsx'
+import SNPreloader from '../components/SNPreloader.jsx'
+import SNDarkRoom from '../components/SNDarkRoom.jsx'
 import useReveal from '../hooks/useReveal.js'
+import useVarFontScroll from '../hooks/useVarFontScroll.js'
+import useBgWarmth from '../hooks/useBgWarmth.js'
 import logoSvg from '../assets/solarnexa-logo.svg'
 import lcPhoto from '../assets/team/lcPhoto.png'
 import cvPhoto from '../assets/team/cvPhoto.webp'
@@ -12,6 +16,21 @@ import spPhoto from '../assets/team/spPhoto.webp'
 import sgPhoto from '../assets/team/sgPhoto.webp'
 import hnPhoto from '../assets/team/hnPhoto.webp'
 import skPhoto from '../assets/team/skPhoto.webp'
+
+/* ── OscNum — live oscillating readout ───────────── */
+function OscNum({ base, suffix = '', prefix = '', decimals = 1, amp = 0.3, hz = 0.8 }) {
+  const [val, setVal] = useState(`${prefix}${base}${suffix}`)
+  const phaseRef = useRef(Math.random() * Math.PI * 2)
+  useEffect(() => {
+    const id = setInterval(() => {
+      const osc = Math.sin(Date.now() * 0.001 * hz * Math.PI * 2 + phaseRef.current) * amp
+      const v = (base + osc).toFixed(decimals)
+      setVal(`${prefix}${v}${suffix}`)
+    }, 80)
+    return () => clearInterval(id)
+  }, [base, suffix, prefix, decimals, amp, hz])
+  return <span>{val}</span>
+}
 
 /* ── tiny helpers ─────────────────────────────────── */
 function scrollTo(id) {
@@ -28,9 +47,11 @@ const NAV_LINKS = [
 ]
 
 function SNNav() {
-  const [stuck, setStuck]   = useState(false)
-  const [active, setActive] = useState(null)
-  const [mopen, setMopen]   = useState(false)
+  const [stuck, setStuck]       = useState(false)
+  const [active, setActive]     = useState(null)
+  const [mopen, setMopen]       = useState(false)
+  const [progress, setProgress] = useState(0)
+  const progressRef             = useRef(null)
 
   useEffect(() => {
     const onScroll = () => {
@@ -38,6 +59,9 @@ function SNNav() {
       const sections = NAV_LINKS.map(([id]) => document.getElementById(id)).filter(Boolean)
       const inView = sections.filter(s => s.getBoundingClientRect().top < window.innerHeight * 0.55)
       setActive(inView.length ? inView[inView.length - 1].id : null)
+      // scroll progress 0→1
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -45,6 +69,8 @@ function SNNav() {
 
   return (
     <nav className={`sn-nav${stuck ? ' sn-nav--stuck' : ''}`}>
+      {/* 2px scroll progress bar */}
+      <div className="sn-nav__progress" ref={progressRef} style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
       <a className="sn-nav__logo" href="#" onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
         <img src={logoSvg} width="30" height="30" alt="SolarNexa mark" className="sn-nav__logo-img" loading="eager" />
         <span className="sn-nav__logo-word">Solar<em>Nexa</em></span>
@@ -99,10 +125,63 @@ const TICKER = [
 ]
 
 function SNTicker() {
-  const items = [...TICKER, ...TICKER]
+  const trackRef  = useRef(null)
+  const xRef      = useRef(0)
+  const velRef    = useRef(1)       // current speed multiplier
+  const targetRef = useRef(1)       // target speed (lerped toward)
+  const lastYRef  = useRef(0)
+  const segWRef   = useRef(0)
+  const rafRef    = useRef(null)
+  const timerRef  = useRef(null)
+
+  const items = [...TICKER, ...TICKER, ...TICKER]  // 3× for seamless loop
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    // Measure one segment width after first paint
+    const firstItem = track.firstChild
+    if (!firstItem) return
+    // Use rAF to ensure layout is complete
+    const measureRaf = requestAnimationFrame(() => {
+      // segment = half the track (we have 3 copies → 1/3)
+      segWRef.current = track.scrollWidth / 3
+    })
+
+    const run = () => {
+      // Smoothly lerp velocity toward target
+      velRef.current += (targetRef.current - velRef.current) * 0.08
+      xRef.current -= velRef.current * 0.9
+      const seg = segWRef.current
+      if (seg > 0 && Math.abs(xRef.current) >= seg) xRef.current += seg
+      track.style.transform = `translateX(${xRef.current}px)`
+      rafRef.current = requestAnimationFrame(run)
+    }
+    rafRef.current = requestAnimationFrame(run)
+
+    // Couple velocity to scroll speed
+    const onScroll = () => {
+      const diff = Math.abs(window.scrollY - lastYRef.current)
+      lastYRef.current = window.scrollY
+      // map scroll delta → speed (1× default, up to 5×)
+      targetRef.current = Math.min(5, 1 + diff * 0.15)
+      clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => { targetRef.current = 1 }, 160)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(measureRaf)
+      cancelAnimationFrame(rafRef.current)
+      clearTimeout(timerRef.current)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
   return (
     <div className="sn-ticker">
-      <div className="sn-ticker__track">
+      <div className="sn-ticker__track" ref={trackRef} style={{ willChange: 'transform' }}>
         {items.map(([val, label], i) => (
           <div key={i} className="sn-ticker__item">
             <span className="sn-ticker__val">{val}</span>
@@ -111,6 +190,106 @@ function SNTicker() {
         ))}
       </div>
     </div>
+  )
+}
+
+/* ── SNZoneI — SolarTree diagram + copy, two-column ── */
+function SNZoneI() {
+  const svgRef = useRef(null)
+
+  useEffect(() => {
+    const paths = svgRef.current?.querySelectorAll('.sn-zone1-branch')
+    if (!paths?.length) return
+
+    paths.forEach(p => {
+      const len = p.getTotalLength ? p.getTotalLength() : 300
+      p.style.strokeDasharray  = len
+      p.style.strokeDashoffset = len
+    })
+
+    Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        gsap.registerPlugin(ScrollTrigger)
+        // Branches draw in staggered on scroll
+        gsap.to([...paths], {
+          strokeDashoffset: 0,
+          ease: 'power2.out',
+          stagger: 0.1,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: svgRef.current,
+            start: 'top 78%',
+            once: true,
+          },
+        })
+      }
+    )
+  }, [])
+
+  return (
+    <section className="sn-zone1">
+      <div className="sn-zone1__grid">
+        {/* LEFT — tree SVG */}
+        <div className="sn-zone1__vis">
+          <svg
+            ref={svgRef}
+            className="sn-zone1__tree"
+            viewBox="0 0 500 640"
+            fill="none"
+            aria-hidden="true"
+          >
+            {/* Structural lines — ink, light */}
+            <g stroke="var(--ink-30)" strokeWidth="1" fill="none">
+              <line x1="250" y1="120" x2="250" y2="600" />
+              <line x1="60"  y1="600" x2="440" y2="600" />
+              <circle cx="250" cy="600" r="4" fill="var(--ink-10)" stroke="none" />
+              <line x1="60"  y1="608" x2="440" y2="608" strokeWidth="0.5" opacity="0.5" />
+              <line x1="80"  y1="616" x2="420" y2="616" strokeWidth="0.5" opacity="0.3" />
+            </g>
+
+            {/* Branches — plasma, draw on scroll */}
+            <g stroke="var(--plasma)" strokeWidth="1.5" strokeLinecap="round" fill="none">
+              <path className="sn-zone1-branch" d="M250,300 C 220,260 180,240 120,220" />
+              <path className="sn-zone1-branch" d="M250,260 C 300,230 360,220 420,210" />
+              <path className="sn-zone1-branch" d="M250,220 C 220,180 190,150 150,120" />
+              <path className="sn-zone1-branch" d="M250,180 C 290,150 340,130 380,100" />
+              <path className="sn-zone1-branch" d="M250,340 C 200,320 150,320 100,340" />
+              <path className="sn-zone1-branch" d="M250,340 C 300,320 350,320 400,340" />
+              <path className="sn-zone1-branch" d="M250,140 C 240,110 250,80 250,40" />
+            </g>
+
+            {/* Panel rectangles at tips */}
+            <g fill="var(--plasma)" opacity="0.55">
+              <rect x="110" y="210" width="22" height="14" transform="rotate(-12 121 217)" />
+              <rect x="410" y="200" width="22" height="14" transform="rotate(8 421 207)" />
+              <rect x="140" y="110" width="22" height="14" transform="rotate(-20 151 117)" />
+              <rect x="370" y="90"  width="22" height="14" transform="rotate(15 381 97)" />
+              <rect x="90"  y="330" width="22" height="14" transform="rotate(-4 101 337)" />
+              <rect x="390" y="330" width="22" height="14" transform="rotate(4 401 337)" />
+              <rect x="240" y="30"  width="22" height="14" />
+            </g>
+          </svg>
+        </div>
+
+        {/* RIGHT — copy, using site's own design system */}
+        <div className="sn-zone1__data">
+          <div className="sn-label reveal">The architecture</div>
+          <h2 className="sn-section-title reveal d1">
+            Solar as<br/><em>living structure.</em>
+          </h2>
+          <p className="sn-zone1__body reveal d2">
+            The SolarTree's articulated branches hold N-Type panels that spread across the vertical dimension — not the ground. A spread canopy maximises irradiance capture across the full solar day without a single motor or tracker.
+          </p>
+          <p className="sn-zone1__body reveal d3">
+            Under one percent of the flat-panel footprint. No rooftop. No open land. One paved bay.
+          </p>
+          <div className="sn-zone1__stat reveal d4">
+            <span className="sn-zone1__stat-val">&lt;1%</span>
+            <span className="sn-zone1__stat-desc">ground footprint vs. equivalent flat-panel yield</span>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -175,14 +354,72 @@ const STEPS = [
 ]
 
 function SNProcess() {
+  const gridRef  = useRef(null)
+  const lineRef  = useRef(null)
+  const dotsRef  = useRef([])
+
+  useEffect(() => {
+    const grid = gridRef.current
+    const line = lineRef.current
+    if (!grid || !line) return
+
+    // Set full dash length equal to SVG line length (fixed 1px horizontal line)
+    const totalLen = 1000
+    line.style.strokeDasharray = totalLen
+    line.style.strokeDashoffset = totalLen
+
+    // Draw the connecting line as the section scrolls into view
+    Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        gsap.registerPlugin(ScrollTrigger)
+        gsap.to(line, {
+          strokeDashoffset: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top 75%',
+            end: 'bottom 65%',
+            scrub: 1,
+          },
+        })
+        dotsRef.current.forEach((dot) => {
+          if (!dot) return
+          ScrollTrigger.create({
+            trigger: dot,
+            start: 'top 72%',
+            onEnter: () => dot.classList.add('sn-process__num--lit'),
+            onLeaveBack: () => dot.classList.remove('sn-process__num--lit'),
+          })
+        })
+      }
+    )
+
+    return () => {}
+  }, [])
+
   return (
     <section className="sn-process" id="process">
       <div className="sn-label reveal">How it works</div>
       <h2 className="sn-section-title reveal d1">Sunlight in.<br/><em>Clean energy out.</em></h2>
-      <div className="sn-process__grid">
+      <div className="sn-process__grid" ref={gridRef}>
+        {/* SVG connector line — draws itself on scroll */}
+        <svg
+          className="sn-process__spine"
+          aria-hidden="true"
+          preserveAspectRatio="none"
+        >
+          <line
+            ref={lineRef}
+            className="sn-process__spine-line"
+            x1="0" y1="26" x2="100%" y2="26"
+          />
+        </svg>
         {STEPS.map((s, i) => (
           <div key={s.n} className={`sn-process__step reveal${i ? ` d${i}` : ''}`}>
-            <div className="sn-process__num">{s.n}</div>
+            <div
+              className="sn-process__num"
+              ref={el => { dotsRef.current[i] = el }}
+            >{s.n}</div>
             <div className="sn-process__title">{s.title}</div>
             <p className="sn-process__desc">{s.desc}</p>
           </div>
@@ -210,7 +447,7 @@ function SNMission() {
             The SolarTree uses the vertical dimension. It occupies a parking bay, not a field. It belongs in a plaza. It charges a car, a phone, and the grid — from a single tree.
           </p>
           <div className="sn-mission__stat">
-            <span className="sn-mission__stat-val">27%</span>
+            <span className="sn-mission__stat-val"><OscNum base={27} suffix="%" decimals={1} amp={0.25} hz={0.7} /></span>
             <span className="sn-mission__stat-desc">CAGR — India's urban solar &amp; EV charging market</span>
           </div>
         </div>
@@ -595,6 +832,8 @@ function SNFooter() {
   return (
     <footer className="sn-footer">
       <div className="sn-footer__glow" />
+      {/* Ghost wordmark — Fraunces ultra-light, paper at 3% opacity, behind all content */}
+      <div className="sn-footer__ghost" aria-hidden="true">SolarNexa</div>
 
       <div className="sn-footer__top">
         <div className="sn-footer__brand-block">
@@ -646,18 +885,26 @@ function SNFooter() {
       </div>
 
       <div className="sn-footer__stats-band">
-        {[
-          { val: '27%',  lbl: 'Market CAGR',       note: 'Solar EV infra India' },
-          { val: '~1%',  lbl: 'Ground footprint',   note: 'vs. flat panel equivalent' },
-          { val: '+30%', lbl: 'Energy yield',        note: 'N-Type + tracking' },
-          { val: 'L2',   lbl: 'EV charging',         note: 'Fast charge, off-grid ready' },
-        ].map(({ val, lbl, note }) => (
-          <div key={lbl} className="sn-footer__stat">
-            <div className="sn-footer__stat-val">{val}</div>
-            <div className="sn-footer__stat-lbl">{lbl}</div>
-            <div className="sn-footer__stat-note">{note}</div>
-          </div>
-        ))}
+        <div className="sn-footer__stat">
+          <div className="sn-footer__stat-val"><OscNum base={27} suffix="%" decimals={1} amp={0.22} hz={0.65} /></div>
+          <div className="sn-footer__stat-lbl">Market CAGR</div>
+          <div className="sn-footer__stat-note">Solar EV infra India</div>
+        </div>
+        <div className="sn-footer__stat">
+          <div className="sn-footer__stat-val"><OscNum base={1} prefix="~" suffix="%" decimals={2} amp={0.08} hz={0.55} /></div>
+          <div className="sn-footer__stat-lbl">Ground footprint</div>
+          <div className="sn-footer__stat-note">vs. flat panel equivalent</div>
+        </div>
+        <div className="sn-footer__stat">
+          <div className="sn-footer__stat-val"><OscNum base={30} prefix="+" suffix="%" decimals={1} amp={0.28} hz={0.72} /></div>
+          <div className="sn-footer__stat-lbl">Energy yield</div>
+          <div className="sn-footer__stat-note">N-Type + tracking</div>
+        </div>
+        <div className="sn-footer__stat">
+          <div className="sn-footer__stat-val">L2</div>
+          <div className="sn-footer__stat-lbl">EV charging</div>
+          <div className="sn-footer__stat-note">Fast charge, off-grid ready</div>
+        </div>
       </div>
 
       <div className="sn-footer__bar">
@@ -678,9 +925,13 @@ function SNFooter() {
 ══════════════════════════════════════════════════ */
 export default function Landing() {
   useReveal()
+  useVarFontScroll()
+  useBgWarmth()
+  const [preloaderDone, setPreloaderDone] = useState(false)
 
   return (
     <div className="sn-body">
+      {!preloaderDone && <SNPreloader onDone={() => setPreloaderDone(true)} />}
       <SNParticles />
       <SNCursor />
       <SNNav />
@@ -716,9 +967,11 @@ export default function Landing() {
       </section>
 
       <SNTicker />
+      <SNZoneI />
       <SNFeatures />
       <SNProcess />
       <SNMission />
+      <SNDarkRoom />
       <SNRoadmap />
       <SNTeam />
       <SNContact />

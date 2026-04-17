@@ -138,15 +138,16 @@ export default function Dashboard() {
       setInstallations(prev => prev.map(inst => {
         if (inst.status !== 'online') return inst
         const delta = +(Math.random() * 0.6 - 0.1).toFixed(1)
-        return { ...inst, energy_today_kwh: Math.max(0, +(inst.energy_today_kwh + delta).toFixed(1)) }
+        const current = inst.energy_today_kwh ?? 0
+        return { ...inst, energy_today_kwh: Math.max(0, +(current + delta).toFixed(1)) }
       }))
     }, 30000)
     return () => clearInterval(id)
   }, [])
 
-  const totalEnergy = installations.reduce((s, i) => s + i.energy_today_kwh, 0)
+  const totalEnergy = installations.reduce((s, i) => s + (i.energy_today_kwh ?? 0), 0)
   const activeCount = installations.filter(i => i.status === 'online').length
-  const totalCap    = installations.reduce((s, i) => s + i.capacity_kw, 0)
+  const totalCap    = installations.reduce((s, i) => s + (i.capacity_kw ?? 0), 0)
 
   if (error) return (
     <div style={{ padding: 40, color: T.plasma, fontFamily: T.ui }}>{error}</div>

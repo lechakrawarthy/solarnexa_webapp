@@ -1,66 +1,88 @@
 import { useEffect, useRef } from 'react'
 
 export default function SNCursor() {
-  const cursorRef = useRef(null)
-  const dotRef    = useRef(null)
-  const ringRef   = useRef(null)
-  const pos = useRef({ mx: 0, my: 0, rx: 0, ry: 0 })
-  const rafRef = useRef(null)
+  const orbRef  = useRef(null)
+  const pos     = useRef({ mx: 0, my: 0, cx: 0, cy: 0 })
+  const rafRef  = useRef(null)
 
   useEffect(() => {
-    // Disable on touch-only / no-pointer devices — saves paint cycles, avoids ghost cursor
     if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return
 
-    const cursor = cursorRef.current
-    const dot    = dotRef.current
-    const ring   = ringRef.current
-    if (!cursor || !dot || !ring) return
+    const orb = orbRef.current
+    if (!orb) return
+
+    let started = false
 
     const onMove = e => {
       pos.current.mx = e.clientX
       pos.current.my = e.clientY
-      dot.style.left = e.clientX + 'px'
-      dot.style.top  = e.clientY + 'px'
+      if (!started) {
+        pos.current.cx = e.clientX
+        pos.current.cy = e.clientY
+        started = true
+      }
     }
     document.addEventListener('mousemove', onMove, { passive: true })
 
-    const animRing = () => {
-      const { mx, my } = pos.current
-      pos.current.rx += (mx - pos.current.rx) * 0.1
-      pos.current.ry += (my - pos.current.ry) * 0.1
-      ring.style.left = pos.current.rx + 'px'
-      ring.style.top  = pos.current.ry + 'px'
-      rafRef.current = requestAnimationFrame(animRing)
+    const tick = () => {
+      pos.current.cx += (pos.current.mx - pos.current.cx) * 0.12
+      pos.current.cy += (pos.current.my - pos.current.cy) * 0.12
+      orb.style.transform = `translate(${pos.current.cx}px, ${pos.current.cy}px)`
+      rafRef.current = requestAnimationFrame(tick)
     }
-    rafRef.current = requestAnimationFrame(animRing)
+    rafRef.current = requestAnimationFrame(tick)
 
-    const hoverSels = 'a,button,.sn-metric,.sn-tag,.sn-cc,.sn-fcard,.sn-tcard,.sn-road__phase,.sn-process__step,.sn-usecase'
-    const textSels  = 'p,h1,h2,h3,.sn-fcard__body,.sn-process__desc'
+    // Track which background type the cursor is over
+    // so we can swap visibility modes
+    const darkSels  = '.sn-mission, .sn-cta, .sn-footer, .sn-darkroom, .sn-fcard--hero'
+    const hoverSels = 'a, button, .sn-fcard, .sn-process__step, .sn-usecase, .sn-tcell, .sn-road__phase, .sn-contact__input, .sn-contact__submit'
 
-    const addHover = () => cursor.classList.add('sn-cursor--hover')
-    const rmHover  = () => cursor.classList.remove('sn-cursor--hover')
-    const addText  = () => cursor.classList.add('sn-cursor--text')
-    const rmText   = () => cursor.classList.remove('sn-cursor--text')
+    const setDark  = () => orb.classList.add('on-dark')
+    const setLight = () => orb.classList.remove('on-dark')
+    const addHover = () => orb.classList.add('is-hovered')
+    const rmHover  = () => orb.classList.remove('is-hovered')
 
+    // Dark Room — massively expand glow when cursor is in the section
+    const darkroom = document.getElementById('darkroom')
+    const setDarkroom    = () => orb.classList.add('in-darkroom')
+    const clearDarkroom  = () => orb.classList.remove('in-darkroom')
+    if (darkroom) {
+      darkroom.addEventListener('mouseenter', setDarkroom)
+      darkroom.addEventListener('mouseleave', clearDarkroom)
+    }
+
+    document.querySelectorAll(darkSels).forEach(el => {
+      el.addEventListener('mouseenter', setDark)
+      el.addEventListener('mouseleave', setLight)
+    })
     document.querySelectorAll(hoverSels).forEach(el => {
       el.addEventListener('mouseenter', addHover)
       el.addEventListener('mouseleave', rmHover)
-    })
-    document.querySelectorAll(textSels).forEach(el => {
-      el.addEventListener('mouseenter', addText)
-      el.addEventListener('mouseleave', rmText)
     })
 
     return () => {
       document.removeEventListener('mousemove', onMove)
       cancelAnimationFrame(rafRef.current)
+      if (darkroom) {
+        darkroom.removeEventListener('mouseenter', setDarkroom)
+        darkroom.removeEventListener('mouseleave', clearDarkroom)
+      }
     }
   }, [])
 
   return (
-    <div className="sn-cursor" ref={cursorRef} aria-hidden="true">
-      <div className="sn-cursor__dot"  ref={dotRef} />
-      <div className="sn-cursor__ring" ref={ringRef} />
-    </div>
+    <div
+      ref={orbRef}
+      className="sn-cursor-orb"
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        pointerEvents: 'none',
+        zIndex: 9998,
+        willChange: 'transform',
+      }}
+    />
   )
 }

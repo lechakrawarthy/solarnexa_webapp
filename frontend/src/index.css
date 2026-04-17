@@ -55,56 +55,53 @@
   letter-spacing: .01em;
 }
 
-/* ── Cursor ────────────────────────────────────────── */
-.sn-cursor {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9000;
-  top: 0;
-  left: 0;
-}
-
-.sn-cursor__dot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--plasma);
-  transform: translate(-50%, -50%);
-  transition: width .15s, height .15s, background .15s;
-}
-
-.sn-cursor__ring {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1.5px solid var(--plasma-60);
-  transform: translate(-50%, -50%);
-  transition: width .35s cubic-bezier(.23, 1, .32, 1), height .35s cubic-bezier(.23, 1, .32, 1), border-color .35s;
-}
-
-.sn-cursor--hover .sn-cursor__dot {
+/* ── Cursor — sun glow orb ─────────────────────────── */
+/*
+  Two visibility modes:
+  Default (light bg): dark amber core + ink outline ring — always visible
+  .on-dark (dark bg): screen blend, bright glow — the sun effect
+  .in-darkroom: massive 300px glow — cursor IS the light source
+*/
+.sn-cursor-orb {
   width: 14px;
   height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFD580 0%, #E07A1A 100%);
+  margin-left: -7px;
+  margin-top: -7px;
+  /* On light backgrounds: visible with a dark shadow ring so it reads against cream */
+  box-shadow:
+    0 0 0 1.5px rgba(28, 24, 20, 0.25),
+    0 0 6px  3px rgba(224, 122, 26, 0.50),
+    0 0 18px 6px rgba(224, 122, 26, 0.18);
+  transition:
+    width .3s ease,
+    height .3s ease,
+    margin .3s ease,
+    box-shadow .35s ease,
+    mix-blend-mode 0s;
 }
 
-.sn-cursor--hover .sn-cursor__ring {
-  width: 52px;
-  height: 52px;
-  border-color: var(--plasma);
+/* On dark sections: drop the outline, switch to screen, full glow */
+.sn-cursor-orb.on-dark {
+  mix-blend-mode: screen;
+  box-shadow:
+    0 0 8px  4px  rgba(224, 122, 26, 0.75),
+    0 0 28px 12px rgba(224, 122, 26, 0.35),
+    0 0 60px 22px rgba(224, 122, 26, 0.14);
 }
 
-.sn-cursor--text .sn-cursor__dot {
-  width: 3px;
+/* Hover expand — works in both modes */
+.sn-cursor-orb.is-hovered {
+  width: 24px;
   height: 24px;
-  border-radius: 2px;
+  margin-left: -12px;
+  margin-top: -12px;
 }
 
-.sn-cursor--text .sn-cursor__ring {
-  width: 0;
-  height: 0;
-  opacity: 0;
+
+@media (hover: none), (pointer: coarse) {
+  .sn-cursor-orb { display: none; }
 }
 
 /* ── Nav ───────────────────────────────────────────── */
@@ -120,6 +117,21 @@
   padding: 0 48px;
   height: 66px;
   transition: background .45s, box-shadow .45s, border-color .45s;
+}
+
+/* Scroll progress bar */
+.sn-nav__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--plasma);
+  transform-origin: left center;
+  transform: scaleX(0);
+  mix-blend-mode: normal;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .sn-nav--stuck {
@@ -536,11 +548,7 @@
 .sn-ticker__track {
   display: flex;
   white-space: nowrap;
-  animation: sn-marquee 28s linear infinite;
-}
-
-.sn-ticker__track:hover {
-  animation-play-state: paused;
+  /* velocity-coupled motion driven by JS — no CSS animation */
 }
 
 .sn-ticker__item {
@@ -607,6 +615,75 @@
   max-width: 500px;
   margin-top: 16px;
   font-weight: 400;
+}
+
+/* ── Zone I — SolarTree diagram section ─────────────── */
+.sn-zone1 {
+  padding: 100px 56px;
+  background: var(--cream);
+}
+
+.sn-zone1__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(48px, 6vw, 100px);
+  align-items: center;
+}
+
+.sn-zone1__vis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sn-zone1__tree {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  overflow: visible;
+}
+
+.sn-zone1__data {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sn-zone1__body {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--ink-60);
+  max-width: 480px;
+}
+
+.sn-zone1__stat {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ink-10);
+}
+
+.sn-zone1__stat-val {
+  font-family: var(--display);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--plasma);
+  line-height: 1;
+}
+
+.sn-zone1__stat-desc {
+  font-size: 13px;
+  color: var(--ink-60);
+  max-width: 200px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .sn-zone1 { padding: 72px 24px; }
+  .sn-zone1__grid { grid-template-columns: 1fr; }
+  .sn-zone1__tree { max-width: 320px; }
 }
 
 /* ── Feature cards bento ───────────────────────────── */
@@ -748,6 +825,7 @@
   line-height: 1.8;
   font-weight: 400;
 }
+
 
 /* ── Process ───────────────────────────────────────── */
 .sn-process {
@@ -2479,4 +2557,128 @@
   .sn-tcell--r2 {
     border-top: 1px solid var(--ink-10);
   }
+}
+/* ══════════════════════════════════════════════════════
+   DARK ROOM — manifesto break section
+══════════════════════════════════════════════════════ */
+.sn-darkroom {
+  background: #0C0F0A;
+  padding: clamp(100px, 16vh, 180px) clamp(24px, 5vw, 72px);
+  position: relative;
+  overflow: hidden;
+}
+
+.sn-darkroom__inner {
+  max-width: 860px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.sn-darkroom__label {
+  font-family: var(--ui);
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--plasma);
+  opacity: 0.75;
+  margin-bottom: 36px;
+  display: block;
+}
+
+.sn-darkroom__text {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(1.5rem, 2.8vw, 2.8rem);
+  line-height: 1.32;
+  letter-spacing: -0.025em;
+  color: #F4F0E6;
+  /* Hidden by default — revealed by cursor mask on desktop, scroll on mobile */
+  opacity: 0;
+}
+
+/* Desktop: text is visible in full, but masked to only show where cursor is */
+@media (min-width: 769px) {
+  .sn-darkroom__text {
+    opacity: 1;
+    -webkit-mask-image: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), #000 0%, rgba(0,0,0,0.4) 50%, transparent 75%);
+            mask-image: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), #000 0%, rgba(0,0,0,0.4) 50%, transparent 75%);
+    /* When cursor hasn't entered yet, hide everything */
+    -webkit-mask-size: 0%;
+            mask-size: 0%;
+  }
+  /* Cursor is inside: full mask active */
+  .sn-darkroom.cursor-active .sn-darkroom__text {
+    -webkit-mask-size: 100%;
+            mask-size: 100%;
+    transition: -webkit-mask-size 0.3s ease;
+    transition: mask-size 0.3s ease;
+  }
+}
+
+.sn-darkroom__text em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--plasma);
+}
+
+@media (max-width: 768px) {
+  .sn-darkroom__text {
+    font-size: clamp(1.2rem, 4.5vw, 1.8rem);
+    line-height: 1.4;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   PROCESS SPINE — SVG line draw on scroll
+══════════════════════════════════════════════════════ */
+.sn-process__grid {
+  position: relative;
+}
+
+.sn-process__spine {
+  position: absolute;
+  top: 0;
+  left: 26px;
+  right: 26px;
+  width: calc(100% - 52px);
+  height: 52px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.sn-process__spine-line {
+  stroke: var(--plasma);
+  stroke-width: 1px;
+  fill: none;
+  stroke-linecap: round;
+}
+
+/* Step circle lights up plasma when spine reaches it */
+.sn-process__num--lit {
+  background: var(--plasma) !important;
+  border-color: var(--plasma) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 4px var(--plasma-15);
+}
+
+/* ══════════════════════════════════════════════════════
+   FOOTER GHOST WORDMARK
+══════════════════════════════════════════════════════ */
+.sn-footer__ghost {
+  position: absolute;
+  left: 50%;
+  bottom: -4vw;
+  transform: translateX(-50%);
+  font-family: var(--display);
+  font-weight: 200;
+  font-variation-settings: "opsz" 144, "wght" 200;
+  font-size: 22vw;
+  line-height: 1;
+  color: rgba(244, 240, 230, 0.03);
+  letter-spacing: -0.05em;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 0;
 }

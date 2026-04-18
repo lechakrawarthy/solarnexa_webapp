@@ -52,6 +52,13 @@ function StatusPill({ status }) {
 }
 
 function Modal({ site, onClose }) {
+  useEffect(() => {
+    if (!site) return
+    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [site, onClose])
+
   if (!site) return null
   const fields = [
     ['Capacity', `${site.capacity_kw} kW`],
@@ -64,12 +71,17 @@ function Modal({ site, onClose }) {
     ['Last Service', new Date(site.last_service).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })],
   ]
   return (
-    <div onClick={onClose} style={{
+    <div onClick={onClose} role="presentation" style={{
       position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(28,24,20,0.5)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       backdropFilter: 'blur(4px)',
     }}>
-      <div onClick={e => e.stopPropagation()} style={{
+      <div
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${site.name} installation details`}
+        style={{
         background: T.paper, borderRadius: 24, width: '100%', maxWidth: 520,
         padding: '36px 36px 32px', position: 'relative',
         boxShadow: '0 32px 80px rgba(28,24,20,0.18)',
@@ -129,7 +141,7 @@ export default function Installations() {
     return ms && mst && mt
   })
 
-  const totalEnergy = installations.reduce((s, i) => s + i.energy_today_kwh, 0)
+  const totalEnergy = installations.reduce((s, i) => s + (i.energy_today_kwh ?? 0), 0)
   const onlineCount = installations.filter(i => i.status === 'online').length
 
   if (error) return <div style={{ padding: 40, color: T.plasma, fontFamily: T.ui }}>{error}</div>

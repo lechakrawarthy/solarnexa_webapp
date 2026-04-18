@@ -1,0 +1,1 @@
+{"nodes": [{"id": "api_route_js", "label": "[...route].js", "file_type": "code", "source_file": "api\\[...route].js", "source_location": "L1"}], "edges": [{"source": "api_route_js", "target": "backend_server_ts", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "api\\[...route].js", "source_location": "L1", "weight": 1.0}], "raw_calls": []}

@@ -95,9 +95,9 @@ export default function Analytics() {
 
   if (error) return <div style={{ padding: 40, color: T.plasma, fontFamily: T.ui }}>{error}</div>
 
-  const totalMonth = monthly.reduce((s, m) => s + m.energy, 0)
-  const totalCO2   = monthly.reduce((s, m) => s + m.co2, 0)
-  const bestDay    = weekly.length ? weekly.reduce((a, b) => a.energy > b.energy ? a : b) : null
+  const totalMonth = monthly.reduce((s, m) => s + (m.energy ?? 0), 0)
+  const totalCO2   = monthly.reduce((s, m) => s + (m.co2 ?? 0), 0)
+  const bestDay    = weekly.length ? weekly.reduce((a, b) => (a.energy ?? 0) > (b.energy ?? 0) ? a : b) : null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>

@@ -60,15 +60,21 @@ function Modal({ site, onClose }) {
   }, [site, onClose])
 
   if (!site) return null
+  const num = (v) => Number.isFinite(v) ? v : 0
+  const fmtDate = (d) => {
+    if (!d) return '—'
+    const dt = new Date(d)
+    return Number.isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
   const fields = [
-    ['Capacity', `${site.capacity_kw} kW`],
-    ['Energy Today', `${site.energy_today_kwh} kWh`],
-    ['Energy This Month', `${site.energy_month_kwh.toLocaleString('en-IN')} kWh`],
-    ['CO₂ Offset Today', `${site.co2_offset_kg} kg`],
-    ['Client', site.client],
-    ['Revenue Today', `₹${Math.round(site.energy_today_kwh * 8).toLocaleString('en-IN')}`],
-    ['Installed', new Date(site.installed_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })],
-    ['Last Service', new Date(site.last_service).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })],
+    ['Capacity', `${num(site.capacity_kw)} kW`],
+    ['Energy Today', `${num(site.energy_today_kwh)} kWh`],
+    ['Energy This Month', `${num(site.energy_month_kwh).toLocaleString('en-IN')} kWh`],
+    ['CO₂ Offset Today', `${num(site.co2_offset_kg)} kg`],
+    ['Client', site.client || '—'],
+    ['Revenue Today', `₹${Math.round(num(site.energy_today_kwh) * 8).toLocaleString('en-IN')}`],
+    ['Installed', fmtDate(site.installed_date)],
+    ['Last Service', fmtDate(site.last_service)],
   ]
   return (
     <div onClick={onClose} role="presentation" style={{
